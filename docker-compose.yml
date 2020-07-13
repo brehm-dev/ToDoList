@@ -1,4 +1,4 @@
-version: "1.0"
+version: "3.8"
 services:
   app:
     build:
@@ -35,7 +35,7 @@ services:
     container_name: todolist-nginx
     restart: unless-stopped
     ports:
-      - 8000:80
+      - 8888:80
     volumes:
       - ./:/var/www
       - ./docker-compose/nginx:/etc/nginx/conf.d
