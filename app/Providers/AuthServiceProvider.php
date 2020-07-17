@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Policies\TaskPolicy;
+use App\Policies\UserPolicy;
+use App\Task;
+use App\User;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -13,7 +18,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
+        User::class => UserPolicy::class,
+        Task::class => TaskPolicy::class
     ];
 
     /**
@@ -24,7 +30,11 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
-        //
+        Gate::define('delete-user', function (User $user) {
+            return $user->isAdminRole() ? Response::allow() : Response::deny('You must be an administrator.');
+        });
+        Gate::define('update-user', function (User $user) {
+            return $user->isAdminRole() || $user->isUserRole();
+        });
     }
 }
