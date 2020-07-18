@@ -6,7 +6,6 @@ use App\Policies\TaskPolicy;
 use App\Policies\UserPolicy;
 use App\Task;
 use App\User;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -30,11 +29,14 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        Gate::define('index-users', 'App\Policies\UserPolicy@viewAny');
+        Gate::define('views-user', 'App\Policies\UserPolicy@create');
         Gate::define('delete-user', function (User $user) {
-            return $user->isAdminRole() ? Response::allow() : Response::deny('You must be an administrator.');
+            return $user->roleIsAdmin();
         });
         Gate::define('update-user', function (User $user) {
-            return $user->isAdminRole() || $user->isUserRole();
+            return $user->roleIsAdmin() || $user->roleIsUser();
         });
+//        dd(Gate::abilities());
     }
 }
