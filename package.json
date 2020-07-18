@@ -1,4 +1,5 @@
 {
+    "main": "resources/js/app.js",
     "private": true,
     "scripts": {
         "dev": "npm run development",
