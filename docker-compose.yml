@@ -18,25 +18,27 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-      args:
-        user: $TODOLIST_SYS_USER
-        uid: $TODOLIST_SYS_UID
+#      args:
+#        user: $TODOLIST_SYS_USER
+#        uid: $TODOLIST_SYS_UID
     environment:
-      TIMEZONE: $TIME_ZONE
-      PHP_IDE_CONFIG: "serverName=${XDEBUG_IDE_TOKEN}"
-    ports:
-#      - 9000:9000
-      - 9001:9001
+      PHP_DATE_TIMEZONE: CEST
+      WEB_DOCUMENT_ROOT: /var/www
+      WEB_DOCUMENT_INDEX: public/index.php
+      WEB_ALIAS_DOMAIN: php.todolist.dev
+      PHP_DISPLAY_ERRORS: 1
+      PHP_DEBUGGER: xdebug
+      XDEBUG_REMOTE_HOST: $IP_HOST
+      XDEBUG_REMOTE_PORT: $XDEBUG_REMOTE_PORT
+      XDEBUG_REMOTE_CONNECT_BACK: 1
+      XDEBUG_IDE_KEY: PHPSTORM
     networks:
       internet:
         ipv4_address: $IP_PHP_FPM
         aliases:
           - php.todolist.dev
     volumes:
-      - ./:/var/www
-#      - ./storage/logs/:/usr/local/var/log/
-      - phpfpmsocket:/var/run/php/
-#      - ./${DC_FOLDER}/entrypoint.sh:/
+      - ./:/var/www:rw
   database:
     image: mysql:5.7
     container_name: todolist-database
@@ -48,31 +50,12 @@ services:
       MYSQL_USER: $DB_USERNAME
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
-    volumes:
+#    volumes:
 #      - ./storage/logs/:/var/log/mysql/
-      - data:/var/lib/mysql/
-    ports:
-      - 3306:3306
+#      - data:/var/lib/mysql/
     networks:
       internet:
         ipv4_address: $IP_DATABASE
         aliases:
           - database.todolist.dev
-  webserver:
-    image: nginx:stable
-    container_name: todolist-webserver
-    hostname: nginx
-    domainname: todolist.development
-    restart: unless-stopped
-    volumes:
-      - ./:/var/www
-      - ./docker-compose/nginx/todolist.local.conf:/etc/nginx/conf.d/default.conf
-      - phpfpmsocket:/var/run/php/
-    ports:
-      - 80:80
-    networks:
-      internet:
-        ipv4_address: $IP_WEBSERVER
-        aliases:
-          - webserver.todolist.dev
 

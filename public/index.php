@@ -1,7 +1,5 @@
 <?php
-var_dump($GLOBALS);
 
-//phpinfo();
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
