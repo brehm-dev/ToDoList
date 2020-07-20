@@ -23,8 +23,8 @@ services:
 #        uid: $TODOLIST_SYS_UID
     environment:
       PHP_DATE_TIMEZONE: CEST
-      WEB_DOCUMENT_ROOT: /var/www
-      WEB_DOCUMENT_INDEX: public/index.php
+      WEB_DOCUMENT_ROOT: /var/www/public
+      WEB_DOCUMENT_INDEX: index.php
       WEB_ALIAS_DOMAIN: php.todolist.dev
       PHP_DISPLAY_ERRORS: 1
       PHP_DEBUGGER: xdebug
@@ -38,7 +38,7 @@ services:
         aliases:
           - php.todolist.dev
     volumes:
-      - ./:/var/www:rw
+      - ./:/var/www
   database:
     image: mysql:5.7
     container_name: todolist-database

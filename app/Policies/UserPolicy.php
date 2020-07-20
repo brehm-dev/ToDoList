@@ -19,11 +19,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        if (Gate::allows('index-users', auth()->user())) {
-            $users = User::all();
-            return view('user.index', ['users' => $users]);
-        }
-        return Response::noContent(404);
+        return is_int($user->getAuthIdentifier());
     }
 
     /**

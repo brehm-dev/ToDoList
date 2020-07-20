@@ -11,20 +11,23 @@
 |
 */
 
-Route::get('/', function () {
-    return redirect("login");
-});
 Auth::routes();
+
+Route::get('/', function () {
+    return view('home', [
+        'testkey' => 'testval'
+    ]);
+//        return redirect("login");
+});
 
 Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 
 
-Route::get('users/', 'UserController@index')->name('users.index');
 
 Route::prefix('user')->group(function () {
     Route::post('/', 'UserController@create')->name('user.create');
+    Route::get('/', 'UserController@index')->name('user.index');
     Route::get('{id}', 'UserController@show')->name('user.read');
     Route::patch('{id}', 'UserController@update')->name('user.update');
     Route::delete('{id}', 'UserController@destroy')->name('user.delete');
 });
-

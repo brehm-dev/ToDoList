@@ -28,7 +28,6 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets
 
 # Enable XDebug
 #RUN pecl install xdebug && docker-php-ext-enable xdebug
-
 # Get latest Composer
 #COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 #RUN /opt/docker/etc/httpd/vhost.common.d/
@@ -45,5 +44,4 @@ RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets
 
 WORKDIR /var/www
 
-USER 1000
 

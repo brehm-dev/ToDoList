@@ -21,11 +21,9 @@ class UserController extends Controller
      */
     public function index()
     {
-//        dd(auth()->user());
-        if (Gate::allows('index-users', auth()->user())) {
-            $users = User::all();
+        if (Gate::check('user:index')) {
             return view('user.index', [
-                'users' => $users
+                'users' => User::all()
             ]);
         }
         return Response::noContent(404);
@@ -38,7 +36,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        if (Gate::allows('create-user', auth()->user())) return view('user.create');
+        if (Gate::allows('user:create', auth()->user())) return view('user.create');
         return Response::noContent(404);
     }
 
@@ -61,7 +59,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if (Gate::allows('show-user', auth()->user())) return view('user.show');
+        if (Gate::allows('user:view', auth()->user())) return view('user.show');
         return Response::noContent(404);
     }
 
@@ -84,7 +82,7 @@ class UserController extends Controller
      */
     public function update(User $user)
     {
-        if (Gate::allows('update-user', auth()->user())) {
+        if (Gate::allows('user:update', auth()->user())) {
             return view('user.show', [
                 'user' => User::find($user->id)
             ]);
@@ -96,14 +94,12 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param User $user
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|\Illuminate\Http\Response|View
      */
     public function destroy(User $user)
     {
-        if (Gate::allows('delete-user', auth()->user())) {
-            return view('user.show', [
-                'user' => User::find($user->id)
-            ]);
+        if (Gate::allows('user:delete', auth()->user())) {
+            return view('user.show');
         }
         return Response::noContent(404);
     }
