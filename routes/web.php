@@ -28,4 +28,3 @@ Route::prefix('user')->group(function () {
     Route::delete('{id}', 'UserController@destroy')->name('user.delete');
 });
 
-//dd(new ReflectionClass(\Illuminate\Routing\Route::class));

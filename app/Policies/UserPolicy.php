@@ -4,6 +4,8 @@ namespace App\Policies;
 
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Response;
 
 class UserPolicy
 {
@@ -17,7 +19,11 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        if (Gate::allows('index-users', auth()->user())) {
+            $users = User::all();
+            return view('user.index', ['users' => $users]);
+        }
+        return Response::noContent(404);
     }
 
     /**
@@ -29,7 +35,11 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        //
+        if (Gate::allows('show-user', auth()->user())) {
+            $users = User::all();
+            return view('user.show', ['users' => $users]);
+        }
+        return Response::noContent(404);
     }
 
     /**
@@ -40,7 +50,11 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        //
+        if (Gate::allows('create-user', auth()->user())) {
+            $users = User::all();
+            return view('user.create', ['users' => $users]);
+        }
+        return Response::noContent(404);
     }
 
     /**
@@ -52,7 +66,10 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        //
+        if (Gate::allows('update-user', auth()->user())) {
+            $users = User::all();
+            return view('user.show', ['users' => $users]);
+        }
     }
 
     /**
@@ -94,7 +111,5 @@ class UserPolicy
     public function before(User $user, $ability)
     {
 
-        if ($user->isAdminRole()) return true;
-        return false;
     }
 }

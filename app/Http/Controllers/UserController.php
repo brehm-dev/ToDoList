@@ -12,10 +12,7 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+
 
     /**
      * Display a listing of the resource.
@@ -24,6 +21,7 @@ class UserController extends Controller
      */
     public function index()
     {
+//        dd(auth()->user());
         if (Gate::allows('index-users', auth()->user())) {
             $users = User::all();
             return view('user.index', [
@@ -91,6 +89,7 @@ class UserController extends Controller
                 'user' => User::find($user->id)
             ]);
         }
+        return Response::noContent(404);
     }
 
     /**
@@ -101,6 +100,11 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        if (Gate::allows('delete-user', auth()->user())) {
+            return view('user.show', [
+                'user' => User::find($user->id)
+            ]);
+        }
+        return Response::noContent(404);
     }
 }

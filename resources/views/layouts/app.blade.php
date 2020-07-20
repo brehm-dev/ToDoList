@@ -66,6 +66,9 @@
                                     </form>
                                 </div>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a href="{{ route('user.index') }}" class="nav-link">Users</a>
+                            </li>
                         @endguest
                     </ul>
                 </div>
