@@ -3,5 +3,13 @@
  * dependencies. Then, we will be ready to develop a robust and powerful
  * application frontend using useful Laravel and JavaScript libraries.
  */
+import './bootstrap';
+import 'bootstrap';
+import Vue from "vue";
 
-require('./bootstrap');
+Vue.component('user-component', require('./components/UserComponent').default);
+
+
+const app = new Vue({
+    el: '#app'
+});
