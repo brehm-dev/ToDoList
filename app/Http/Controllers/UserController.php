@@ -32,11 +32,28 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param Request $request
      * @return Application|Factory|\Illuminate\Http\Response|View
      */
-    public function create()
+    public function create(Request $request)
     {
-        if (Gate::allows('user:create', auth()->user())) return view('user.create');
+        $ajax = $request->ajax();
+        $fingerprint = $request->fingerprint();
+        return json_encode($request);
+        // TODO: persist new user
+//        $this->authorize('create', auth()->user());
+    }
+
+    public function createForm()
+    {
+        if (Gate::allows('user:create', auth()->user())) {
+            return view('user.create', [
+                'data' => [
+                    'url' => route('user.create.post'),
+                    'method' => 'POST'
+                ]
+            ]);
+        }
         return Response::noContent(404);
     }
 

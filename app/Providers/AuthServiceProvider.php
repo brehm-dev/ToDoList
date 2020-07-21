@@ -29,14 +29,15 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+//        Auth::viaRequest('');
         Gate::define('user:index', 'App\Policies\UserPolicy@viewAny');
-        Gate::define('user:view', 'App\Policies\UserPolicy@create');
-        Gate::define('user:delete', function (User $user) {
-            return $user->roleIsAdmin();
-        });
-        Gate::define('user:update', function (User $user) {
-            return $user->roleIsAdmin() || $user->roleIsUser();
-        });
+        Gate::define('user:create', 'App\Policies\UserPolicy@create');
+//        Gate::define('user:delete', function (User $user) {
+//            return $user->roleIsAdmin();
+//        });
+//        Gate::define('user:update', function (User $user) {
+//            return $user->roleIsAdmin() || $user->roleIsUser();
+//        });
 //        dd(Gate::abilities());
     }
 }

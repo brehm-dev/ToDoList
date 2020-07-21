@@ -14,28 +14,28 @@ class UserPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\User  $user
-     * @return mixed
+     * @return boolean
      */
-    public function viewAny(User $user)
+    public function viewAny()
     {
-        return is_int($user->getAuthIdentifier());
+        return (bool) auth()->user()->roleIsUser();
     }
 
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\User  $user
-     * @param  \App\User  $model
-     * @return mixed
+     * @param User $user
+     * @param \App\User $model
+     * @return boolean
      */
     public function view(User $user, User $model)
     {
-        if (Gate::allows('show-user', auth()->user())) {
-            $users = User::all();
-            return view('user.show', ['users' => $users]);
-        }
-        return Response::noContent(404);
+        return (bool) $user->id == $model->id || $user->roleIsAdmin();
+//        if (Gate::allows('show-user', auth()->user())) {
+//            $users = User::all();
+//            return view('user.show', ['users' => $users]);
+//        }
+//        return Response::noContent(404);
     }
 
     /**
@@ -46,11 +46,15 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        if (Gate::allows('create-user', auth()->user())) {
-            $users = User::all();
-            return view('user.create', ['users' => $users]);
-        }
-        return Response::noContent(404);
+        return (bool) $user->roleIsUser();
+//        return is_int($user->getAuthIdentifier());
+//        dd(Gate::check('user:create'));
+//        if (Gate::allows('user:create', auth()->user())) {
+//            $users = User::all();
+//            dd($users);
+//            return view('user.create', ['users' => $users]);
+//        }
+//        return Response::noContent(404);
     }
 
     /**
@@ -62,10 +66,12 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        if (Gate::allows('update-user', auth()->user())) {
-            $users = User::all();
-            return view('user.show', ['users' => $users]);
-        }
+        return (bool) $user->id == $model->id || $user->roleIsAdmin();
+
+//        if (Gate::allows('update-user', auth()->user())) {
+//            $users = User::all();
+//            return view('user.show', ['users' => $users]);
+//        }
     }
 
     /**
@@ -77,7 +83,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model)
     {
-        //
+        return (bool) $user->id == $model->id || $user->roleIsAdmin();
     }
 
     /**
