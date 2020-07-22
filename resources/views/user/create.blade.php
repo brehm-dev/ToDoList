@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <form action="{{ route('user.create.post') }}" method="POST">
+    <form action="{{ route('create.user') }}" method="POST">
         @csrf
         <div class="container">
             <div class="card">

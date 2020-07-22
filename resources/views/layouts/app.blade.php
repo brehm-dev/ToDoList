@@ -69,15 +69,15 @@
                             <li class="nav-item dropdown">
                                 <a href="#" class="nav-link dropdown-toggle" id="navbarDropDownUsers" data-toggle="dropdown">Users <span class="caret"></span></a>
                                 <div class="dropdown-menu"  aria-labelledby="navbarDropDownUsers">
-                                    <a href="{{ route('users.index') }}" class="dropdown-item">Index</a>
-                                    <a href="{{ route('user.create') }}" v-on:click="" class="dropdown-item">New User</a>
+                                    <a href="{{ route('index.user') }}" class="dropdown-item">Index</a>
+                                    <a href="{{ route('form.user') }}" v-on:click="" class="dropdown-item">New User</a>
                                 </div>
                             </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropDownSchedule" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>Schedules <span class="caret"></span></a>
                                 <div class="dropdown-menu"  aria-labelledby="navbarDropDownSchedule">
-                                    <a href="#" class="dropdown-item">Index</a>
-                                    <a href="#" class="dropdown-item">New Schedule</a>
+                                    <a href="{{ route('index.schedules') }}" class="dropdown-item">Index</a>
+                                    <a href="{{ route('create.schedule') }}" class="dropdown-item">New Schedule</a>
                                 </div>
                             </li>
                         @endguest

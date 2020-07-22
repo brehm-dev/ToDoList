@@ -6,11 +6,11 @@
             <div class="col-md-8">
                 @foreach($users as $user)
                     <div class="card">
-                        <a href="{{ route('user.view', [$user->id]) }}">
+                        <a href="{{ route('read.user', [$user->id]) }}">
                             <div class="card-header">{{ $user->id }}</div>
                         </a>
                         <div class="card-body">
-                            <h5 class="card-title">{{ $user->first_name }} {{ $user->last_name }}</h5>
+                            <h5 class="card-title">{{ $user->username }}</h5>
                             <p class="card-text">{{ $user->email }} {{ $user->role }} {{ $user->created_at }}</p>
                         </div>
                     </div>

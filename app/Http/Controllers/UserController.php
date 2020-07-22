@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
@@ -31,7 +32,7 @@ class UserController extends Controller
      * Show the form for creating a new resource.
      *
      * @param Request $request
-     * @return Application|Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|View
+     * @return Application|Factory|RedirectResponse|\Illuminate\Http\Response|View
      */
     public function create(Request $request)
     {
@@ -52,14 +53,14 @@ class UserController extends Controller
         if ($request->ajax()) {
             return $newUser;
         }
-        return redirect()->route('user.view', $newUser);
+        return redirect()->route('read.user', $newUser);
     }
 
     public function createForm()
     {
         return view('user.create', [
             'data' => [
-                'url' => route('user.create.post'),
+                'url' => route('create.user'),
                 'method' => 'POST'
             ]
         ]);
@@ -89,7 +90,7 @@ class UserController extends Controller
         Gate::check('user-view-user');
         return view('user.view', [
             'user' => $user,
-            'action' => route('user.update', [$user]),
+            'action' => route('update.user', [$user]),
             'method' => 'PATCH'
         ]);
     }
@@ -110,12 +111,11 @@ class UserController extends Controller
      *
      * @param Request $request
      * @param $userId
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function update(Request $request, $userId)
     {
         $data = $request->all();
-        dd($data);
         $user = User::find($userId);
         // TODO authorize user and validate data
         if ($user instanceof User) {
@@ -125,7 +125,7 @@ class UserController extends Controller
                 'role' => $data['role']
             ]);
         }
-        return redirect()->route('users.index');
+        return redirect()->route('index.user');
 //        dd();
 //        if (Gate::allows('user:update', auth()->user())) {
 //            return view('user.show', [

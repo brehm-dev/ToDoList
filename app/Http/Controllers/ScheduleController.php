@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Schedule;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ScheduleController extends Controller
 {
@@ -14,17 +17,23 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        //
+        return view('schedule.index', [
+           'schedules' => Schedule::all()
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return Application|Factory|View
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        //TODO: authorization and check user's role
+        return view('schedule.view', [
+            'action' => route('create.user')
+        ]);
     }
 
     /**

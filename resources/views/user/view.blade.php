@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <form action="{{ $action }}" method="{{ $method }}">
+    <form action="{{ $action }}" method="POST">
         @method($method)
         @csrf
         <div class="container">
@@ -46,13 +46,13 @@
                             <div class="col-8">
                                 <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                     <label class="btn btn-light">
-                                        <input type="radio" name="role" id="role_admin" autocomplete="off" checked> ADMIN
+                                        <input type="radio" name="role" id="role_admin" value="ROLE_ADMIN" autocomplete="off"> ADMIN
                                     </label>
                                     <label class="btn btn-light">
-                                        <input type="radio" name="role" id="role_master" autocomplete="off"> MASTER
+                                        <input type="radio" name="role" id="role_master" value="ROLE_MASTER" autocomplete="off"> MASTER
                                     </label>
                                     <label class="btn btn-light">
-                                        <input type="radio" name="role" id="role_user" autocomplete="off"> USER
+                                        <input type="radio" name="role" id="role_user" value="ROLE_USER" autocomplete="off"> USER
                                     </label>
                                 </div>
                             </div>
