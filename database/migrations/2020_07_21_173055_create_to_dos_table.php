@@ -16,18 +16,21 @@ class CreateToDosTable extends Migration
         Schema::create('todos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('creator_user_id');
-            $table->unsignedBigInteger('target_user_id');
+            $table->unsignedBigInteger('target_user_id')->nullable();
+            $table->unsignedBigInteger('schedule_id');
+            $table->boolean('delegated')->default(false);
             $table->string('title');
             $table->text('description');
             $table->timestamps();
             $table->foreign('creator_user_id')
                 ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+                ->on('users');
             $table->foreign('target_user_id')
                 ->references('id')
-                ->on('users')
-                ->onDelete('cascade');
+                ->on('users');
+            $table->foreign('schedule_id')
+                ->references('id')
+                ->on('schedules');
         });
     }
 

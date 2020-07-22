@@ -6,7 +6,10 @@ use App\Schedule;
 use Faker\Generator as Faker;
 
 $factory->define(Schedule::class, function (Faker $faker) {
+    $roles = ['ROLE_USER', 'ROLE_MASTER', 'ROLE_USER'];
     return [
-        //
+        'name' => $faker->domainName,
+        'visibility' => array_rand($roles, 1),
+        'description' => $faker->text
     ];
 });
