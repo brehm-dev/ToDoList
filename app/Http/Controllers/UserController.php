@@ -21,25 +21,48 @@ class UserController extends Controller
      */
     public function index()
     {
-//        dd(auth()->user());
-        if (Gate::allows('index-users', auth()->user())) {
-            $users = User::all();
-            return view('user.index', [
-                'users' => $users
-            ]);
-        }
-        return Response::noContent(404);
+        // TODO: pagination
+        return view('user.index', [
+            'users' => User::all()
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return Application|Factory|\Illuminate\Http\Response|View
+     * @param Request $request
+     * @return Application|Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|View
      */
-    public function create()
+    public function create(Request $request)
     {
-        if (Gate::allows('create-user', auth()->user())) return view('user.create');
-        return Response::noContent(404);
+        $success = null;
+        $this->validate($request, [
+            'username' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+//                not in dev env
+//                'confirmed'
+            ],
+        ]);
+
+        $newUser = User::create($request->all());
+        if ($request->ajax()) {
+            return $newUser;
+        }
+        return redirect()->route('user.view', $newUser);
+    }
+
+    public function createForm()
+    {
+        return view('user.create', [
+            'data' => [
+                'url' => route('user.create.post'),
+                'method' => 'POST'
+            ]
+        ]);
     }
 
     /**
@@ -56,13 +79,19 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param User $user
+     * @param Request $request
+     * @param $id $user->id
      * @return Application|Factory|\Illuminate\Http\Response|View
      */
-    public function show(User $user)
+    public function view(Request $request, $id)
     {
-        if (Gate::allows('show-user', auth()->user())) return view('user.show');
-        return Response::noContent(404);
+        $user = User::find($id);
+        Gate::check('user-view-user');
+        return view('user.view', [
+            'user' => $user,
+            'action' => route('user.update', [$user]),
+            'method' => 'PATCH'
+        ]);
     }
 
     /**
@@ -84,7 +113,7 @@ class UserController extends Controller
      */
     public function update(User $user)
     {
-        if (Gate::allows('update-user', auth()->user())) {
+        if (Gate::allows('user:update', auth()->user())) {
             return view('user.show', [
                 'user' => User::find($user->id)
             ]);
@@ -96,14 +125,12 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param User $user
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|\Illuminate\Http\Response|View
      */
     public function destroy(User $user)
     {
-        if (Gate::allows('delete-user', auth()->user())) {
-            return view('user.show', [
-                'user' => User::find($user->id)
-            ]);
+        if (Gate::allows('user:delete', auth()->user())) {
+            return view('user.show');
         }
         return Response::noContent(404);
     }

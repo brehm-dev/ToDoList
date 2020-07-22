@@ -17,8 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        User::class => UserPolicy::class,
-        Task::class => TaskPolicy::class
+        User::class => UserPolicy::class
     ];
 
     /**
@@ -29,14 +28,22 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-        Gate::define('index-users', 'App\Policies\UserPolicy@viewAny');
-        Gate::define('views-user', 'App\Policies\UserPolicy@create');
-        Gate::define('delete-user', function (User $user) {
-            return $user->roleIsAdmin();
+//        Auth::viaRequest('');
+        Gate::define('user:index', 'App\Policies\UserPolicy@viewAny');
+        Gate::define('user:create', 'App\Policies\UserPolicy@create');
+//        Gate::define('view-user', 'App\Policies\UserPolicy@view');
+//        if (Gate::forUser($user)->allows('view-user', $user)) {
+//            dd($user);
+//        }
+        Gate::define('user-view-user', function (User $user) {
+            return $user->roleIsUser();
         });
-        Gate::define('update-user', function (User $user) {
-            return $user->roleIsAdmin() || $user->roleIsUser();
-        });
+//        Gate::define('user:delete', function (User $user) {
+//            return $user->roleIsAdmin();
+//        });
+//        Gate::define('user:update', function (User $user) {
+//            return $user->roleIsAdmin() || $user->roleIsUser();
+//        });
 //        dd(Gate::abilities());
     }
 }

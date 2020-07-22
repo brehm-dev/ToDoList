@@ -50,11 +50,11 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                <a id="navbarDropdownUser" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ Auth::user()->username }} <span class="caret"></span>
                                 </a>
-
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownUser">
+                                    <a class="dropdown-item" href="#">Profile</a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -67,7 +67,18 @@
                                 </div>
                             </li>
                             <li class="nav-item dropdown">
-                                <a href="{{ route('user.index') }}" class="nav-link">Users</a>
+                                <a href="#" class="nav-link dropdown-toggle" id="navbarDropDownUsers" data-toggle="dropdown">Users <span class="caret"></span></a>
+                                <div class="dropdown-menu"  aria-labelledby="navbarDropDownUsers">
+                                    <a href="{{ route('users.index') }}" class="dropdown-item">Index</a>
+                                    <a href="{{ route('user.create') }}" v-on:click="" class="dropdown-item">New User</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a id="navbarDropDownSchedule" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>Schedules <span class="caret"></span></a>
+                                <div class="dropdown-menu"  aria-labelledby="navbarDropDownSchedule">
+                                    <a href="#" class="dropdown-item">Index</a>
+                                    <a href="#" class="dropdown-item">New Schedule</a>
+                                </div>
                             </li>
                         @endguest
                     </ul>
