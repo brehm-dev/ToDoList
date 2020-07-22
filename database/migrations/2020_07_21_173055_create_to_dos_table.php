@@ -13,7 +13,7 @@ class CreateToDosTable extends Migration
      */
     public function up()
     {
-        Schema::create('schedules', function (Blueprint $table) {
+        Schema::create('todos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('creator_user_id');
             $table->unsignedBigInteger('target_user_id');
