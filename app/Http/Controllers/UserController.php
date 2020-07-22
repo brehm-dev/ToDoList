@@ -108,17 +108,31 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param User $user
-     * @return Application|Factory|\Illuminate\Http\Response|View
+     * @param Request $request
+     * @param $userId
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(User $user)
+    public function update(Request $request, $userId)
     {
-        if (Gate::allows('user:update', auth()->user())) {
-            return view('user.show', [
-                'user' => User::find($user->id)
+        $data = $request->all();
+        dd($data);
+        $user = User::find($userId);
+        // TODO authorize user and validate data
+        if ($user instanceof User) {
+            User::where('id', $userId)->update([
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'role' => $data['role']
             ]);
         }
-        return Response::noContent(404);
+        return redirect()->route('users.index');
+//        dd();
+//        if (Gate::allows('user:update', auth()->user())) {
+//            return view('user.show', [
+//                'user' => User::find($user->id)
+//            ]);
+//        }
+//        return Response::noContent(404);
     }
 
     /**
