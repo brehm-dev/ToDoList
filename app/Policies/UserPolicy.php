@@ -4,12 +4,18 @@ namespace App\Policies;
 
 use App\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
 
 class UserPolicy
 {
     use HandlesAuthorization;
+
+    public function __construct()
+    {
+
+    }
 
     /**
      * Determine whether the user can view any models.
@@ -18,19 +24,21 @@ class UserPolicy
      */
     public function viewAny()
     {
-        return (bool) auth()->user()->roleIsUser();
+        return auth()->user()->roleIsUser();
     }
 
     /**
      * Determine whether the user can view the model.
      *
-     * @param User $user
-     * @param \App\User $model
+     * @param Request $request
+     * @param $id
      * @return boolean
      */
-    public function view(User $user, User $model)
+    public function view(...$id)
     {
-        return (bool) $user->id == $model->id || $user->roleIsAdmin();
+//        dd(id);
+        return true;
+//        return (bool) $user->id == $model->id || $user->roleIsAdmin();
 //        if (Gate::allows('show-user', auth()->user())) {
 //            $users = User::all();
 //            return view('user.show', ['users' => $users]);
@@ -46,7 +54,10 @@ class UserPolicy
      */
     public function create(User $user)
     {
+//        dd($user);
         return (bool) $user->roleIsUser();
+//        dd($user->roleIsAdmin());
+//        return $user->roleIsAdmin();
 //        return is_int($user->getAuthIdentifier());
 //        dd(Gate::check('user:create'));
 //        if (Gate::allows('user:create', auth()->user())) {

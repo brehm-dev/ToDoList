@@ -28,7 +28,7 @@ Route::get('/users', 'UserController@index')->name('users.index');
 Route::prefix('user')->group(function () {
     Route::get('/', 'UserController@createForm')->name('user.create');
     Route::post('/', 'UserController@create')->name('user.create.post');
-    Route::get('{id}', 'UserController@show')->name('user.read');
+    Route::get('{id}', 'UserController@view')->name('user.view');
     Route::patch('{id}', 'UserController@update')->name('user.update');
     Route::delete('{id}', 'UserController@destroy')->name('user.delete');
 });

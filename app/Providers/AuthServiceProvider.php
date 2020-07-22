@@ -17,8 +17,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        User::class => UserPolicy::class,
-        Task::class => TaskPolicy::class
+        User::class => UserPolicy::class
     ];
 
     /**
@@ -32,6 +31,13 @@ class AuthServiceProvider extends ServiceProvider
 //        Auth::viaRequest('');
         Gate::define('user:index', 'App\Policies\UserPolicy@viewAny');
         Gate::define('user:create', 'App\Policies\UserPolicy@create');
+//        Gate::define('view-user', 'App\Policies\UserPolicy@view');
+//        if (Gate::forUser($user)->allows('view-user', $user)) {
+//            dd($user);
+//        }
+        Gate::define('user-view-user', function (User $user) {
+            return $user->roleIsUser();
+        });
 //        Gate::define('user:delete', function (User $user) {
 //            return $user->roleIsAdmin();
 //        });

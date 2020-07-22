@@ -21,40 +21,48 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (Gate::check('user:index')) {
-            return view('user.index', [
-                'users' => User::all()
-            ]);
-        }
-        return Response::noContent(404);
+        // TODO: pagination
+        return view('user.index', [
+            'users' => User::all()
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      *
      * @param Request $request
-     * @return Application|Factory|\Illuminate\Http\Response|View
+     * @return Application|Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|View
      */
     public function create(Request $request)
     {
-        $ajax = $request->ajax();
-        $fingerprint = $request->fingerprint();
-        return json_encode($request);
-        // TODO: persist new user
-//        $this->authorize('create', auth()->user());
+        $success = null;
+        $this->validate($request, [
+            'username' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+//                not in dev env
+//                'confirmed'
+            ],
+        ]);
+
+        $newUser = User::create($request->all());
+        if ($request->ajax()) {
+            return $newUser;
+        }
+        return redirect()->route('user.view', $newUser);
     }
 
     public function createForm()
     {
-        if (Gate::allows('user:create', auth()->user())) {
-            return view('user.create', [
-                'data' => [
-                    'url' => route('user.create.post'),
-                    'method' => 'POST'
-                ]
-            ]);
-        }
-        return Response::noContent(404);
+        return view('user.create', [
+            'data' => [
+                'url' => route('user.create.post'),
+                'method' => 'POST'
+            ]
+        ]);
     }
 
     /**
@@ -71,13 +79,19 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param User $user
+     * @param Request $request
+     * @param $id $user->id
      * @return Application|Factory|\Illuminate\Http\Response|View
      */
-    public function show(User $user)
+    public function view(Request $request, $id)
     {
-        if (Gate::allows('user:view', auth()->user())) return view('user.show');
-        return Response::noContent(404);
+        $user = User::find($id);
+        Gate::check('user-view-user');
+        return view('user.view', [
+            'user' => $user,
+            'action' => route('user.update', [$user]),
+            'method' => 'PATCH'
+        ]);
     }
 
     /**

@@ -14,13 +14,12 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    const ROLE_ADMIN    = 'ADMIN';
-    const ROLE_MASTER   = 'MASTER';
-    const ROLE_USER     = 'USER';
+    const ROLE_ADMIN    = 'ROLE_ADMIN';
+    const ROLE_MASTER   = 'ROLE_MASTER';
+    const ROLE_USER     = 'ROLE_USER';
 
     const TABLE_NAME = 'users';
-    const TABLE_FIRST_NAME = 'first_name';
-    const TABLE_LAST_NAME = 'last_name';
+    const TABLE_USERNAME = 'username';
     const TABLE_EMAIL = 'email';
     const TABLE_EMAIL_VERIFIED_AT = 'email_verified_at';
     const TABLE_PASSWORD = 'password';
@@ -33,7 +32,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'password', 'role'
+        'username', 'email', 'password', 'role'
     ];
 
     /**
