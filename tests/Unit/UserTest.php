@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Schedule;
 use App\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +16,7 @@ class UserTest extends TestCase
     use WithFaker;
     use RefreshDatabase;
 
-    public function testCreate()
+    public function testCreation()
     {
         $instance = factory(User::class)->create([User::TABLE_ROLE => User::ROLE_USER]);
         $this->assertTrue($instance->wasRecentlyCreated);
@@ -25,15 +26,12 @@ class UserTest extends TestCase
     {
         $this->refreshDatabase();
         Artisan::call('db:seed');
-        sleep(2);
         $attributes = [
-            User::TABLE_LAST_NAME => $this->faker->lastName,
-            User::TABLE_FIRST_NAME => $this->faker->firstName,
+            User::TABLE_USERNAME => $this->faker->userName,
             User::TABLE_EMAIL => $this->faker->safeEmail,
             User::TABLE_ROLE => User::ROLE_MASTER,
-            User::UPDATED_AT => now()
         ];
-        $originUser = User::where(User::TABLE_ROLE, User::ROLE_USER)->first();
+        $originUser = User::where(User::TABLE_ROLE, User::ROLE_USER)->get()->first();
         $this->assertNotEmpty($originUser);
 
         $currentUser = User::find($originUser->id);
@@ -60,22 +58,25 @@ class UserTest extends TestCase
     public function testCreateUserRoleAdmin()
     {
         $user = $this->createUser($this->getDummyTestUsers(User::ROLE_ADMIN));
-        $this->assertTrue($user->roleIsAdmin());
+        $this->assertTrue($user->isRoleAdmin());
     }
 
     public function testCreateUserRoleMaster()
     {
         $user = $this->createUser($this->getDummyTestUsers(User::ROLE_MASTER));
-        $this->assertTrue($user->roleIsMaster());
+        $this->assertInstanceOf(Schedule::class, $user->defaultSchedule());
+        $this->assertTrue($user->isRoleMaster());
     }
 
     public function testCreateUserRoleUser()
     {
         $user = $this->createUser($this->getDummyTestUsers(User::ROLE_USER));
-        $this->assertTrue($user->roleIsUser());
+        $this->assertTrue($user->isRoleUser());
     }
 
-
+    private function getDefaultSchedule(){
+        return Schedule::checkAndSetDefault();
+    }
 
     /**
      * @param $data
@@ -94,31 +95,30 @@ class UserTest extends TestCase
     {
         $roles = [
             User::ROLE_ADMIN => [
-                'first_name' => 'TestFirstNameAdmin',
-                'last_name' => 'TestLastNameAdmin',
+                'default_schedule_id' => $this->getDefaultSchedule()->getAttribute('id'),
+                'username' => 'TestAdmin',
                 'email' => 'testadmin@todolist.development',
-                'email_verified_at' => now(),
                 'password' => Hash::make(env('TEST_ADMIN_PASSWORD')),
                 'role' => User::ROLE_ADMIN,
                 'remember_token' => Str::random(10)
             ],
             User::ROLE_MASTER => [
-                'first_name' => 'TestFirstNameMaster',
-                'last_name' => 'TestLastNameMaster',
+                'username' => 'TestMaster',
                 'email' => 'testmaster@todolist.development',
                 'email_verified_at' => now(),
                 'password' => Hash::make(env('TEST_MASTER_PASSWORD')),
                 'role' => User::ROLE_MASTER,
-                'remember_token' => Str::random(10)
+                'remember_token' => Str::random(10),
+                'default_schedule_id' => $this->getDefaultSchedule()->getAttribute('id')
             ],
             User::ROLE_USER => [
-                'first_name' => 'TestFirstNameUser',
-                'last_name' => 'TestLastNameUser',
+                'username' => 'TestUser',
                 'email' => 'testuser@todolist.development',
                 'email_verified_at' => now(),
                 'password' => Hash::make(env('TEST_USER_PASSWORD')),
                 'role' => User::ROLE_USER,
-                'remember_token' => Str::random(10)
+                'remember_token' => Str::random(10),
+                'default_schedule_id' => $this->getDefaultSchedule()->getAttribute('id')
             ]
         ];
         return $roles[$role];
