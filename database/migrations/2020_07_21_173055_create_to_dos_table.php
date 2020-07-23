@@ -41,6 +41,6 @@ class CreateToDosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('to_dos');
+        Schema::dropIfExists('todos');
     }
 }

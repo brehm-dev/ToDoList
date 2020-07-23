@@ -36,16 +36,13 @@ class UserController extends Controller
      */
     public function create(Request $request)
     {
-        $success = null;
         $this->validate($request, [
             'username' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => [
                 'required',
                 'string',
-                'min:8',
-//                not in dev env
-//                'confirmed'
+                'min:8'
             ],
         ]);
 

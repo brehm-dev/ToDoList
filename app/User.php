@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * @method static find($id)
+ * @method static create(array $array)
  */
 class User extends Authenticatable
 {
@@ -32,7 +33,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password', 'role'
+        'username', 'email', 'password', 'role', 'default_schedule_id'
     ];
 
     /**
@@ -57,25 +58,42 @@ class User extends Authenticatable
     /**
      * @return bool
      */
-    public function roleIsAdmin() {
-        if ($this->attributes['role'] === self::ROLE_ADMIN) return true;
+    public function isRoleMaster() {
+        if ($this->getAttribute('role') === self::ROLE_MASTER) return true;
         return false;
     }
 
     /**
      * @return bool
      */
-    public function roleIsMaster()
+    public function isRoleAdmin()
     {
-        if ($this->attributes['role'] === self::ROLE_MASTER) return true;
+        if ($this->getAttribute('role') === self::ROLE_ADMIN) return true;
         return false;
     }
 
     /**
      * @return bool
      */
-    public function roleIsUser() {
-        if ($this->attributes['role'] === self::ROLE_USER) return true;
+    public function isRoleUser() {
+        if ($this->getAttribute('role') === self::ROLE_USER) return true;
         return false;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRole()
+    {
+        return $this->getAttribute('role');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function defaultSchedule()
+    {
+        return $this->belongsTo('App\Schedule', 'default_schedule_id')->getResults();
+    }
+
 }

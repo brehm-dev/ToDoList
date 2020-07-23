@@ -36,14 +36,12 @@ Route::prefix('user')->group(function () {
 Route::prefix('schedule')->group(function () {
     Route::get('/', 'ScheduleController@create')->name('form.schedule');
     Route::post('/', 'ScheduleController@store')->name('create.schedule');
-    Route::get('{schedule}', 'ScheduleController@view')->name('read.schedule');
-    Route::patch('{schedule}', 'ScheduleController@update')->name('update.schedule');
-    Route::delete('{schedule}', 'ScheduleController@destroy')->name('delete.schedule');
-    Route::prefix('/{schedule}/todo')->group(function () {
-        Route::get('/', 'ToDoController@create')->name('form.todo');
-        Route::post('/', 'ToDoController@store')->name('create.todo');
-        Route::get('/{todo}', 'ToDoController@show')->name('read.todo');
-        Route::patch('/{todo}', 'ToDoController@update')->name('update.todo');
-        Route::delete('/{todo}', 'ToDoController@destroy')->name('delete.todo');
-    });
+    Route::get('/{schedule}', 'ScheduleController@show')->name('read.schedule');
+    Route::patch('/{schedule}', 'ScheduleController@update')->name('update.schedule');
+    Route::delete('/{schedule}', 'ScheduleController@destroy')->name('delete.schedule');
+    Route::get('{schedule?}/todo/', 'ToDoController@create')->name('form.todo');
+    Route::post('/{schedule}/todo/', 'ToDoController@store')->name('create.todo');
+    Route::get('/{schedule}/todo/{todo}', 'ToDoController@show')->name('read.todo');
+    Route::patch('/{schedule}/todo/{todo}', 'ToDoController@update')->name('update.todo');
+    Route::delete('/{schedule}/todo/{todo}', 'ToDoController@destroy')->name('delete.todo');
 });

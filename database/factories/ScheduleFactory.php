@@ -10,6 +10,7 @@ $factory->define(Schedule::class, function (Faker $faker) {
     return [
         'name' => $faker->domainName,
         'visibility' => $roles[array_rand($roles)],
-        'description' => $faker->text
+        'description' => $faker->text,
+        'slug' => $faker->sha256
     ];
 });
