@@ -2,20 +2,31 @@
 
 @section('content')
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                @foreach($users as $user)
-                    <div class="card">
-                        <a href="{{ route('read.user', [$user->id]) }}">
-                            <div class="card-header">{{ $user->id }}</div>
-                        </a>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $user->username }}</h5>
-                            <p class="card-text">{{ $user->email }} {{ $user->role }} {{ $user->created_at }}</p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
+        <table class="table-dark table-bordered">
+            <thead>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>RemToken</th>
+            <th>verified</th>
+            <th>Created</th>
+            <th>Updated</th>
+            </thead>
+            <tbody>
+            @foreach($users as $user)
+                <tr>
+                    <th>{{ $user->id }}</th>
+                    <th><a href="{{ route('read.user', [$user]) }}">{{ $user->username }}</a></th>
+                    <th>{{ $user->email }}</th>
+                    <th>{{ $user->role }}</th>
+                    <th>{{ $user->remember_token }}</th>
+                    <th>{{ $user->email_verified_at }}</th>
+                    <th>{{ $user->created_at }}</th>
+                    <th>{{ $user->updated_at }}</th>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
     </div>
 @endsection
