@@ -8,7 +8,7 @@
 <script>
     import User from './User';
     import Schedule from './Schedule';
-    import { bus } from '../app'
+    import {bus} from '../app'
 
     export default {
         name: 'instance-loader',
@@ -19,34 +19,51 @@
         },
         mounted() {
             this.$nextTick(function () {
-                bus.$on('inject-component', this.dispatchInstance);
+                bus.$on('inject-component', this.dispatchInstance)
+                bus.$on('get-current-user', this.getCurrentUser)
+                bus.$on('get-routes-for-component', this.getRoutesForComponent)
             })
         },
         computed: {
             switchInstance() {
-                if (this.userIsAdmin === false) {
+                if (this.currentUser.role === "ROLE_ADMIN") {
                     return this.current === User ? User : Schedule
                 } else {
                     return this.current = Schedule
                 }
             }
         },
-        components: {
-            User: User,
-            Schedule: Schedule
-        },
+        components: {User, Schedule},
         props: {
-            userIsAdmin: {
-                type: Boolean
+            allRoutes: {
+                type: Object
             },
-            routes: {
+            currentUser: {
                 type: Object
             }
         },
         methods: {
             dispatchInstance: function (instance) {
-                instance.routes = this.routes.user
+                instance.routes = this.allRoutes
                 this.current = instance
+            },
+            getRoutesForComponent(component, callback) {
+                let routes = {}
+                if (component.length < 1) {
+                    routes = this.allRoutes
+                } else {
+                    if (this.allRoutes.hasOwnProperty(component)) {
+                        routes = this.allRoutes[component]
+                    }
+                }
+                if (typeof callback === 'function') {
+                    callback(routes)
+                }
+            },
+            getCurrentUser(cb) {
+                if (typeof cb === 'function') {
+                    cb(this.currentUser)
+                }
             }
         }
     }

@@ -3,33 +3,46 @@
         <div class="card">
             <div class="card-header">
                 <div class="row">
-                    <div class="col-sm-4"><h5>User {{ route }}</h5></div>
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <h5>User {{ route }}</h5>
+                        </div>
+                        <div class="row">
+                            <button
+                                @mouseup="returnToPrevious"
+                                class="btn btn-sm btn-outline-dark"
+                                v-show="this.route !== 'Index'"
+                            >
+                                <h5>&lt;</h5>
+                            </button>
+                        </div>
+                    </div>
                     <div class="col-sm-4"></div>
                     <div class="col-sm-4">
-                        <button class="btn btn-primary" @click="switchType({route: 'Create'})">Create New User</button>
+                        <button class="btn btn-primary" @click="switchRoute({route: 'Create'})">Create New User</button>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <UserIndex
                     v-if="route === 'Index'"
-                    v-bind:route="routes.index"
+                    v-bind:route="routes.user.index"
                 ></UserIndex>
 
                 <UserCreate
                     v-if="route === 'Create'"
-                    v-bind:route="routes.create"
+                    v-bind:route="routes.user.create"
                 ></UserCreate>
 
                 <UserEdit
                     v-if="route === 'Edit'"
-                    v-bind:route="routes.update"
+                    v-bind:route="routes.user.update"
                     v-bind:credentials="user"
                 ></UserEdit>
 
                 <UserDelete
                     v-if="route === 'Delete'"
-                    v-bind:route="routes.delete"
+                    v-bind:route="routes.user.delete"
                     v-bind:user="user"
                 ></UserDelete>
             </div>
@@ -55,13 +68,18 @@
         data: function () {
             return {
                 route: 'Index',
-                user: null
+                user: null,
+                history: []
             }
         },
         mounted() {
             this.$nextTick(() => {
-                bus.$on('redirect-component', this.switchType)
+                bus.$on('redirect-component', this.switchRoute)
                 bus.$on('delete-user', this.deleteUser)
+                bus.$on('return-to-previous', () => {
+                    console.log(this.history[this.history.length - 1])
+                    this.route = this.history[this.history.length - 1]
+                })
             })
         },
         methods: {
@@ -69,12 +87,16 @@
                 this.user = args.user
                 this.route = args.route
             },
-            switchType(args) {
+            switchRoute(args) {
+                this.history.push(this.route)
                 if (args.hasOwnProperty('user')) this.user = args.user
                 if (args.hasOwnProperty('route')) this.route = args.route
             },
             submitUser(event) {
                 bus.$emit('submit-user');
+            },
+            returnToPrevious() {
+                bus.$emit('return-to-previous')
             }
         },
         components: {UserIndex, UserCreate, UserEdit, UserDelete},
