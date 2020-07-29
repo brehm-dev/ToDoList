@@ -8,20 +8,33 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ScheduleController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return Collection
      */
     public function index()
     {
-        return view('schedule.index', [
-           'schedules' => Schedule::all()
+        return new Collection([
+            'privates' => Schedule::getPrivateSchedules(),
+            'ownGlobals' => Schedule::getOwnGlobalSchedules(),
+            'foreignGlobals' => Schedule::getGlobalSchedules()
         ]);
     }
 
@@ -29,13 +42,14 @@ class ScheduleController extends Controller
      * Show the form for creating a new resource.
      *
      * @param Request $request
+     * @param Schedule $schedule
      * @return Application|Factory|View
      */
     public function create(Request $request)
     {
         //TODO: authorization and check user's role
         return view('schedule.view', [
-            'action' => route('create.schedule')
+            'action' => route('schedule.create')
         ]);
     }
 
@@ -47,31 +61,25 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
-
-        // TODO: authorize user and validate new schedule
-        $newScheduleData = $request->all();
-//        dd();
-        $schedule = Schedule::create([
-            'name' => $newScheduleData['name'],
-            'visibility' => $newScheduleData['visibility'],
-            'description' => $newScheduleData['description']
+        $data = $request->all();
+        return Schedule::create([
+            'owner_id' => auth()->user()->getAuthIdentifier(),
+            'name' => $data['name'],
+            'type' => $data['type']
         ]);
-        return redirect()->route('read.schedule', [$schedule]);
-
     }
 
     /**
      * Display the specified resource.
      *
      * @param Schedule $schedule
-     * @return Response
+     * @return Application|Factory|View
      */
     public function show(Schedule $schedule)
     {
-//        dd($schedule->getAttributes());
         return view('schedule.view', [
             'schedule' => $schedule,
-            'action' => route('update.schedule', [$schedule]),
+            'action' => route('schedule.update', [$schedule]),
             'method' => 'PATCH'
         ]);
     }
@@ -97,13 +105,14 @@ class ScheduleController extends Controller
     public function update(Request $request, Schedule $schedule)
     {
         $parameters = $request->all();
+//        dd($parameters);
         $isUpdated = $schedule->update([
             'name' => $parameters['name'],
-            'visibility' => $parameters['visibility'],
-            'description' => $parameters['description']
+            'type' => $parameters['type'],
+            'info' => $parameters['info']
         ]);
         if ($isUpdated) {
-            return redirect()->route('index.schedules');
+            return redirect()->route('schedule.index');
         }
         return Redirect::back();
     }
@@ -112,10 +121,11 @@ class ScheduleController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Schedule $schedule
-     * @return Response
+     * @return bool|Response
+     * @throws \Exception
      */
     public function destroy(Schedule $schedule)
     {
-        //
+        return json_encode(['deleted' => $schedule->delete()]);
     }
 }
