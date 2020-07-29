@@ -21,7 +21,7 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 
 Route::get('/users', 'UserController@index')->name('user.index');
 Route::get('/schedules', 'ScheduleController@index')->name('schedule.index');
-Route::get('/procedures', 'ProcedureController@index')->name('procedures.index');
+Route::get('/schedule/{schedule}/procedures', 'ProcedureController@index')->name('procedures.index');
 
 
 Route::prefix('user')->group(function () {

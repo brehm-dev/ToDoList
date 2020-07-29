@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+{{--    {{ dd(gettype(auth()->user()->isRoleAdmin())) }}--}}
     <instance-loader
-        userIsAdmin="{{ auth()->user()->isRoleAdmin() }}"
-        v-bind:routes="{
+        v-bind:current-user="{{ auth()->user() }}"
+        v-bind:all-routes="{
             user: {
                 index: {
                     action: '/users',
@@ -31,6 +32,44 @@
                     action: '/schedules',
                     method: 'GET'
                 },
+                create: {
+                    action: '/schedule',
+                    method: 'POST'
+                },
+                view: {
+                    action: '/schedule/{schedule}',
+                    method: 'GET'
+                },
+                update: {
+                    action: '/schedule/{schedule}',
+                    method: 'PATCH'
+                },
+                delete: {
+                    action: '/schedule/{schedule}',
+                    method: 'DELETE'
+                }
+            },
+            procedure: {
+                index: {
+                    action: '/schedule/{schedule}/procedures',
+                    method: 'GET'
+                },
+                create: {
+                    action: '/schedule/{schedule}/procedure',
+                    method: 'POST'
+                },
+                view: {
+                    action: '/schedule/{schedule}/procedure/{procedure}',
+                    method: 'GET'
+                },
+                update: {
+                    action: '/schedule/{schedule}/procedure/{procedure}',
+                    method: 'PATCH'
+                },
+                delete: {
+                    action: '/schedule/{schedule}/procedure/{procedure}',
+                    method: 'DELETE'
+                }
             }
         }"
     ></instance-loader>

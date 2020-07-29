@@ -17,8 +17,7 @@ class CreateSchedulesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('owner_id');
             $table->string('name');
-            $table->string('type')->default('private');
-            $table->text('info');
+            $table->string('type');
             $table->timestamps();
             $table->foreign('owner_id')
                 ->references('id')
