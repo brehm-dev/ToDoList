@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Schedule;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -64,13 +63,11 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        $defaultSchedule = Schedule::checkAndSetDefault()->first();
         return User::create([
             'username' => $data['username'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => 'ROLE_USER',
-            'default_schedule_id' => $defaultSchedule->getAttribute('id')
         ]);
     }
 }

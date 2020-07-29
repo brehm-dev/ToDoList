@@ -3,20 +3,18 @@
 namespace App;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Carbon;
 
 /**
  * @method static find($id)
  * @method static create(array $array)
+ * @property integer id
  */
 class User extends Authenticatable
 {
     use Notifiable;
 
     const ROLE_ADMIN    = 'ROLE_ADMIN';
-    const ROLE_MASTER   = 'ROLE_MASTER';
     const ROLE_USER     = 'ROLE_USER';
 
     const TABLE_NAME = 'users';
@@ -33,7 +31,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'email', 'password', 'role', 'default_schedule_id'
+        'username', 'email', 'password', 'role'
     ];
 
     /**
@@ -54,15 +52,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-
-    /**
-     * @return bool
-     */
-    public function isRoleMaster() {
-        if ($this->getAttribute('role') === self::ROLE_MASTER) return true;
-        return false;
-    }
-
     /**
      * @return bool
      */
@@ -81,19 +70,11 @@ class User extends Authenticatable
     }
 
     /**
-     * @return mixed
+     * @return string|bool
      */
     public function getRole()
     {
         return $this->getAttribute('role');
-    }
-
-    /**
-     * @return mixed
-     */
-    public function defaultSchedule()
-    {
-        return $this->belongsTo('App\Schedule', 'default_schedule_id')->getResults();
     }
 
 }
