@@ -15,11 +15,14 @@ class CreateSchedulesTable extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('owner_id');
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->string('visibility')->default('ROLE_USER');
-            $table->string('description');
+            $table->string('type')->default('private');
+            $table->text('info');
             $table->timestamps();
+            $table->foreign('owner_id')
+                ->references('id')
+                ->on('users');
         });
     }
 
