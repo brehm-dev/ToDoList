@@ -13,6 +13,9 @@ $factory->define(Procedure::class, function (Faker $faker) {
         'state' => $states[array_rand($states)],
         'schedule_id' => function () {
             return factory(\App\Schedule::class)->create()->id;
+        },
+        'creator_id' => function () {
+            return factory(\App\User::class)->create()->id;
         }
     ];
 });

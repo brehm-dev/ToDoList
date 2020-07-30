@@ -49,6 +49,7 @@ class ProcedureTest extends TestCase
         $procedureData = self::PROCEDURE;
         $this->assertTrue(isset($schedule->id));
         $procedureData['schedule_id'] = $schedule->id;
+        $procedureData['creator_id'] = $user->id;
 
         /* procedure instance */
         $procedure = Procedure::create($procedureData);
