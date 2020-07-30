@@ -75,6 +75,7 @@
                                 <div class="row">
                                     <span class="badge badge-light">State: </span>
                                     <span class="badge badge-light">{{ procedure.state }}</span>
+                                    <span class="badge badge-light">{{ procedure.creator.username || procedure.creator.email }}</span>
                                 </div>
                                 <div class="row">
                                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -141,10 +142,10 @@
             }
         },
         props: {
-            route: {
+            schedule: {
                 type: Object
             },
-            schedule: {
+            router: {
                 type: Object
             }
         },
@@ -158,8 +159,8 @@
             },
             updateProcedure(procedure, update) {
                 window.axios({
-                    method: this.route.update.method,
-                    url: this.route.update.action.replace('{schedule}', this.schedule.id).replace('{procedure}', procedure.id),
+                    method: this.router.procedure.update.method,
+                    url: this.router.procedure.update.action.replace('{schedule}', this.schedule.id).replace('{procedure}', procedure.id),
                     data: {
                         content: update.content,
                         content_type: update.content_type,
@@ -173,11 +174,11 @@
             },
             deleteProcedure(procedure, index) {
                 window.axios({
-                    method: this.route.delete.method,
-                    url: this.route.delete.action.replace('{schedule}', this.schedule.id).replace('{procedure}', procedure.id)
+                    method: this.router.procedure.delete.method,
+                    url: this.router.procedure.delete.action.replace('{schedule}', this.schedule.id).replace('{procedure}', procedure.id)
                 }).then(response => {
                     if (response.status === 200 && response.data.deleted === true) {
-                        console.log(this.$refs['procedure'][index].remove())
+                        this.$refs['procedure'][index].remove()
                     }
                 })
             },
@@ -219,8 +220,8 @@
         },
         created() {
             window.axios({
-                method: this.route.index.method,
-                url: this.route.index.action.replace('{schedule}', this.schedule.id)
+                method: this.router.procedure.index.method,
+                url: this.router.procedure.index.action.replace('{schedule}', this.schedule.id)
             }).then(response => {
                 this.procedures = response.data
             })

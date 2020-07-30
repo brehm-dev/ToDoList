@@ -19,27 +19,27 @@
                     </div>
                     <div class="col-sm-4"></div>
                     <div class="col-sm-4">
-                        <button class="btn btn-primary" @click="switchRoute({route: 'Create'})">Create New Schedule</button>
+                        <button v-show="route === 'Index'" class="btn btn-sm btn-primary" @click="switchRoute({route: 'Create'})">Create New Schedule</button>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <ScheduleIndex
                     v-if="route === 'Index'"
-                    v-bind:route="routes.schedule.index"
+                    v-bind:router="router"
                 ></ScheduleIndex>
                 <ScheduleCreate
                     v-if="route === 'Create'"
-                    v-bind:route="routes.schedule.create"
+                    v-bind:router="router"
                 ></ScheduleCreate>
                 <ProcedureIndex
                     v-if="route === 'ProcedureIndex'"
-                    v-bind:route="routes.procedure"
+                    v-bind:router="router"
                     v-bind:schedule="schedule"
                 ></ProcedureIndex>
                 <ProcedureCreate
                     v-if="route === 'ProcedureCreate'"
-                    v-bind:route="routes.procedure.create"
+                    v-bind:router="router"
                     v-bind:schedule="schedule"
                 ></ProcedureCreate>
             </div>
@@ -61,22 +61,18 @@
     import { bus } from '../app'
 
     export default {
-
         name: 'Schedule',
-
         data: function () {
             return {
                 route: 'Index',
                 schedule: {},
-                history: []
+                history: [],
             }
         },
         mounted() {
-            // console.log(this)
+
             this.$nextTick(() => {
                 bus.$on('redirect-schedule', this.switchRoute)
-                // this.$on('get-route-for-key', this.getRouteForKey)
-                // bus.$on('delete-schedule', this.deleteUser)
             })
         },
         methods: {
@@ -95,17 +91,39 @@
                 }
             },
             switchRoute(args) {
+
                 this.history.push(this.route)
                 if (args.hasOwnProperty('schedule')) this.schedule = args.schedule
                 if (args.hasOwnProperty('route')) this.route = args.route
             },
             returnToPrevious() {
-                bus.$emit('return-to-previous')
+                const index = 'Index'
+                const procedureIndex = 'ProcedureIndex'
+                const procedureCreate = 'ProcedureCreate'
+                console.log(this.history)
+                const last = this.history[this.history.length - 1]
+                const priv = this.history[this.history.length - 2]
+                if (
+                    priv === procedureIndex && last === procedureCreate ||
+                    priv === procedureCreate && last === procedureIndex ||
+                    priv === procedureIndex && last === procedureIndex ||
+                    last === procedureIndex && priv === index ||
+                    last === index
+                ) {
+                    this.route = index
+                }
+                if (
+                    priv === index && last === procedureIndex ||
+                    priv === procedureIndex && last === procedureIndex
+                ) {
+                    this.route = procedureIndex
+                }
+
             }
         },
         components: {ScheduleIndex, ScheduleCreate, ProcedureIndex, ProcedureCreate},
         props: {
-            routes: {
+            router: {
                 type: Object
             }
         }

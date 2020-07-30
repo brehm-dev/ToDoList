@@ -19,31 +19,31 @@
                     </div>
                     <div class="col-sm-4"></div>
                     <div class="col-sm-4">
-                        <button class="btn btn-primary" @click="switchRoute({route: 'Create'})">Create New User</button>
+                        <button class="btn btn-sm btn-primary" @click="switchRoute({route: 'Create'})">Create New User</button>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <UserIndex
                     v-if="route === 'Index'"
-                    v-bind:route="routes.user.index"
+                    v-bind:router="router"
                 ></UserIndex>
 
                 <UserCreate
                     v-if="route === 'Create'"
-                    v-bind:route="routes.user.create"
+                    v-bind:router="router"
                 ></UserCreate>
 
                 <UserEdit
                     v-if="route === 'Edit'"
-                    v-bind:route="routes.user.update"
                     v-bind:credentials="user"
+                    v-bind:router="router"
                 ></UserEdit>
 
                 <UserDelete
                     v-if="route === 'Delete'"
-                    v-bind:route="routes.user.delete"
                     v-bind:user="user"
+                    v-bind:router="router"
                 ></UserDelete>
             </div>
             <div class="card-footer" v-if="route === 'Create' || route === 'Edit'">
@@ -101,7 +101,7 @@
         },
         components: {UserIndex, UserCreate, UserEdit, UserDelete},
         props: {
-            routes: {
+            router: {
                 type: Object
             }
         }

@@ -31,16 +31,21 @@
                 }
             }
         },
+        mounted() {
+            this.$nextTick(function () {
+                bus.$on('submit-schedule', this.submit);
+            })
+        },
         props: {
-            route: {
+            router: {
                 type: Object
             }
         },
         methods: {
             submit() {
                 window.axios({
-                    method: this.route.method,
-                    url: this.route.action,
+                    method: this.router.schedule.create.method,
+                    url: this.router.schedule.create.action,
                     data: this.schedule
                 }).then(response => {
                     // console.log(response)
@@ -49,11 +54,6 @@
                     console.log(e)
                 })
             }
-        },
-        mounted() {
-            this.$nextTick(function () {
-                bus.$on('submit-schedule', this.submit);
-            })
         }
     }
 </script>

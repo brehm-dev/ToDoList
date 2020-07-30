@@ -32,14 +32,25 @@
         name: 'ScheduleIndex',
         data: function () {
             return {
-                schedules: {}
+                schedules: {},
             }
         },
+        mounted() {},
+        created() {
+            window.axios({
+                method: this.router.schedule.index.method,
+                url: this.router.schedule.index.action
+            }).then(response => {
+                console.log(response.data)
+                this.schedules = response.data
+            })
+        },
         props: {
-            route: {
+            router: {
                 type: Object
             }
         },
+        components: {ScheduleListing},
         methods: {
             // editUser(user) {
             //     bus.$emit('redirect-component', {route: 'Edit', user: user})
@@ -47,16 +58,6 @@
             // deleteUser(user) {
             //     bus.$emit('delete-user', {route: 'Delete', user: user})
             // }
-        },
-        created() {
-            window.axios({
-                method: this.route.method,
-                url: this.route.action
-            }).then(response => {
-                console.log(response.data)
-                this.schedules = response.data
-            })
-        },
-        components: {ScheduleListing}
+        }
     }
 </script>

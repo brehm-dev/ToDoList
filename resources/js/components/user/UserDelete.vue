@@ -22,7 +22,7 @@
             return {}
         },
         props: {
-            route: {
+            router: {
                 type: Object
             },
             user: {
@@ -32,8 +32,8 @@
         methods: {
             acceptDelete() {
                 window.axios({
-                    method: this.route.method,
-                    url: this.route.action.replace('{user}', this.user.id)
+                    method: this.router.user.delete.method,
+                    url: this.router.user.delete.action.replace('{user}', this.user.id)
                 }).then(response => {
                     if (response.data.deleted === true) {
                         bus.$emit('redirect-component', {route: 'Index'})

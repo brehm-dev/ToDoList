@@ -59,7 +59,7 @@
             }
         },
         props: {
-            route: {
+            router: {
                 type: Object
             },
             credentials: {
@@ -68,10 +68,10 @@
         },
         methods: {
             submit() {
-                const url = this.route.action.replace('{user}', this.credentials.id)
-                console.log(this.route, url, this.credentials)
+                const url = this.router.user.update.action.replace('{user}', this.credentials.id)
+                // console.log(this.route, url, this.credentials)
                 window.axios({
-                    method: this.route.method,
+                    method: this.router.user.update.method,
                     url: url,
                     data: {
                         username: this.credentials.username,

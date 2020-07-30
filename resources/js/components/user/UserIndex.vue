@@ -40,7 +40,7 @@
             }
         },
         props: {
-            route: {
+            router: {
                 type: Object
             }
         },
@@ -55,9 +55,10 @@
         created() {
             if (this.users === null) {
                 window.axios({
-                    method: this.route.method,
-                    url: this.route.action
+                    method: this.router.user.index.method,
+                    url: this.router.user.index.action
                 }).then(response => {
+                    console.log(response)
                     this.users = response.data
                 })
             }

@@ -2,6 +2,7 @@
     <component
         :is="current"
         v-bind="switchInstance"
+        v-bind:router="router"
     ></component>
 </template>
 
@@ -21,7 +22,7 @@
             this.$nextTick(function () {
                 bus.$on('inject-component', this.dispatchInstance)
                 bus.$on('get-current-user', this.getCurrentUser)
-                bus.$on('get-routes-for-component', this.getRoutesForComponent)
+                bus.$on('get-route-for-key', this.getRouteForKey)
             })
         },
         computed: {
@@ -35,7 +36,7 @@
         },
         components: {User, Schedule},
         props: {
-            allRoutes: {
+            router: {
                 type: Object
             },
             currentUser: {
@@ -44,21 +45,7 @@
         },
         methods: {
             dispatchInstance: function (instance) {
-                instance.routes = this.allRoutes
-                this.current = instance
-            },
-            getRoutesForComponent(component, callback) {
-                let routes = {}
-                if (component.length < 1) {
-                    routes = this.allRoutes
-                } else {
-                    if (this.allRoutes.hasOwnProperty(component)) {
-                        routes = this.allRoutes[component]
-                    }
-                }
-                if (typeof callback === 'function') {
-                    callback(routes)
-                }
+                this.current = this.current === instance ? null : instance
             },
             getCurrentUser(cb) {
                 if (typeof cb === 'function') {

@@ -33,13 +33,16 @@
             },
             schedule: {
                 type: Object
+            },
+            router: {
+                type: Object
             }
         },
         methods: {
             submit() {
                 window.axios({
-                    method: this.route.method,
-                    url: this.route.action.replace('{schedule}', this.schedule.id),
+                    method: this.router.procedure.create.method,
+                    url: this.router.procedure.create.action.replace('{schedule}', this.schedule.id),
                     data: this.procedure
                 }).then(response => {
                     console.log(response)

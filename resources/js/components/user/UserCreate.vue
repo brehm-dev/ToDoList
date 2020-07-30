@@ -54,15 +54,15 @@
             }
         },
         props: {
-            route: {
+            router: {
                 type: Object
             }
         },
         methods: {
             submit() {
                 window.axios({
-                    method: this.route.method,
-                    url: this.route.action,
+                    method: this.router.user.create.method,
+                    url: this.router.user.create.action,
                     data: this.credentials
                 }).then(response => {
                     bus.$emit('redirect-component', {route: 'Index'})

@@ -27,7 +27,7 @@
                                 <span class="badge badge-light">{{ schedule.todos }}</span>
                             </div>
                         </div>
-                        <div class="col-sm-4" v-if="schedule.owner.id === user.id">
+                        <div class="col-sm-4">
                             <button
                                 @click="enterSchedule(schedule)"
                                 class="btn btn-info"
@@ -56,7 +56,6 @@
         data: function () {
             return {
                 user: {},
-                routes: {}
             }
         },
         props: {
@@ -65,28 +64,31 @@
             },
             type: {
                 type: Object
+            },
+            router: {
+                type: Object
             }
         },
         created() {
             bus.$emit('get-current-user', (user) => {
                 this.user = user
             })
-            bus.$emit('get-routes-for-component', '',(routes) => {
-                this.routes = routes
-            })
+
         },
         methods: {
             deleteSchedule(schedule, index) {
-                if (window.confirm(`Do you want to delete Schedule: ${schedule.name} ?`)) {
-                    const deleteRoute = this.routes.schedule['delete']
-                    const route = deleteRoute.action.replace('{schedule}', schedule.id)
-                    window.axios({
-                        method: deleteRoute.method,
-                        url: route
-                    }).then(response => {
-                        if (response.data.deleted) this.$refs['schedule'][index].remove()
-                    })
-                }
+                console.log(this.router)
+                // if (window.confirm(`Do you want to delete Schedule: ${schedule.name} ?`)) {
+                //     const deleteRoute = this.router.schedule['delete']
+                //     const route = deleteRoute.action.replace('{schedule}', schedule.id)
+
+                    // window.axios({
+                    //     method: deleteRoute.method,
+                    //     url: route
+                    // }).then(response => {
+                    //     if (response.data.deleted) this.$refs['schedule'][index].remove()
+                    // })
+                // }
             },
             enterSchedule(schedule) {
                 bus.$emit('redirect-schedule', {
