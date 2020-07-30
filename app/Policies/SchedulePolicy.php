@@ -18,7 +18,7 @@ class SchedulePolicy
      */
     public function viewAny(User $user)
     {
-        return $user->isRoleUser();
+        return $user->isRoleUser() || $user->isRoleAdmin();
     }
 
     /**
@@ -30,7 +30,7 @@ class SchedulePolicy
      */
     public function view(User $user)
     {
-        return $user->isRoleAdmin();
+        return $user->isRoleUser() || $user->isRoleAdmin();
 //        dd($user);
 //        dd($schedule);
 //        return $schedule->getOwner();
@@ -44,7 +44,7 @@ class SchedulePolicy
      */
     public function create(User $user)
     {
-        return $user->isRoleUser();
+        return $user->isRoleUser() || $user->isRoleAdmin();
     }
 
     /**
@@ -56,7 +56,7 @@ class SchedulePolicy
      */
     public function update(User $user, Schedule $schedule)
     {
-        return $user->isRoleUser();
+        return $user->isRoleUser() || $user->isRoleAdmin();
     }
 
     /**
@@ -68,7 +68,7 @@ class SchedulePolicy
      */
     public function delete(User $user, Schedule $schedule)
     {
-        return $user->isRoleUser();
+        return $user->isRoleUser() || $user->isRoleAdmin();
     }
 
     /**
@@ -80,7 +80,7 @@ class SchedulePolicy
      */
     public function restore(User $user, Schedule $schedule)
     {
-        return $user->isRoleUser();
+        return $user->isRoleUser() || $user->isRoleAdmin();
     }
 
     /**

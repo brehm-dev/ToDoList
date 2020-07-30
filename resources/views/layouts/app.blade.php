@@ -51,17 +51,11 @@
                                 <user-nav-link
                                     user-index-route="{{ route('user.index') }}"
                                 ></user-nav-link>
-{{--                                <li class="nav-item">--}}
-{{--                                    <a href="{{ route('user.index') }}" class="nav-link">Users</a>--}}
-{{--                                </li>--}}
                             @endcanany
                             @canany(['viewAny','view','create','update','delete'], App\Schedule::class)
                                 <schedule-nav-link
                                     schedule-index-route="{{ route('schedule.index') }}"
                                 ></schedule-nav-link>
-                                    {{--                                <li class="nav-item">--}}
-{{--                                    <a v-on:click.stop="showLink" href="{{ route('schedule.index') }}" class="nav-link">Schedules</a>--}}
-{{--                                </li>--}}
                             @endcanany
                                 <li class="nav-item dropdown">
                                     <a id="navbarDropdownUser" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
