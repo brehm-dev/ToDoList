@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Schedule;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,7 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
+        $request->user()->can('viewAny', $request->user(), Schedule::class);
         return view('dashboard');
     }
 }

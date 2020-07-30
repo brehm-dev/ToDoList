@@ -18,8 +18,8 @@ use Faker\Generator as Faker;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'username' => $faker->userName,
         'email' => $faker->unique()->safeEmail,
+        'username' => $faker->userName,
         'email_verified_at' => now(),
         'password' => Hash::make(env('TEST_USER_PASSWORD')),
         'remember_token' => Str::random(100)

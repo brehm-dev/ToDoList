@@ -1,10 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-{{--    {{ dd(gettype(auth()->user()->isRoleAdmin())) }}--}}
     <instance-loader
         v-bind:current-user="{{ auth()->user() }}"
-        v-bind:all-routes="{
+        v-bind:router="{
             user: {
                 index: {
                     action: '/users',
@@ -16,15 +15,18 @@
                 },
                 view: {
                     action: '/user/{user}',
-                    method: 'GET'
+                    method: 'GET',
+                    depend: ['user']
                 },
                 update: {
                     action: '/user/{user}',
-                    method: 'PATCH'
+                    method: 'PATCH',
+                    depend: ['user']
                 },
                 delete: {
                     action: '/user/{user}',
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    depend: ['user']
                 },
             },
             schedule: {
@@ -38,37 +40,45 @@
                 },
                 view: {
                     action: '/schedule/{schedule}',
-                    method: 'GET'
+                    method: 'GET',
+                    depend: ['schedule']
                 },
                 update: {
                     action: '/schedule/{schedule}',
-                    method: 'PATCH'
+                    method: 'PATCH',
+                    depend: ['schedule']
                 },
                 delete: {
                     action: '/schedule/{schedule}',
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    depend: ['schedule']
                 }
             },
             procedure: {
                 index: {
                     action: '/schedule/{schedule}/procedures',
-                    method: 'GET'
+                    method: 'GET',
+                    depend: ['schedule']
                 },
                 create: {
                     action: '/schedule/{schedule}/procedure',
-                    method: 'POST'
+                    method: 'POST',
+                    depend: ['schedule']
                 },
                 view: {
                     action: '/schedule/{schedule}/procedure/{procedure}',
-                    method: 'GET'
+                    method: 'GET',
+                    depend: ['schedule', 'procedure']
                 },
                 update: {
                     action: '/schedule/{schedule}/procedure/{procedure}',
-                    method: 'PATCH'
+                    method: 'PATCH',
+                    depend: ['schedule', 'procedure']
                 },
                 delete: {
                     action: '/schedule/{schedule}/procedure/{procedure}',
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    depend: ['schedule', 'procedure']
                 }
             }
         }"

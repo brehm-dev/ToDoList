@@ -8,9 +8,10 @@ use Faker\Generator as Faker;
 $factory->define(Schedule::class, function (Faker $faker) {
     $types = ['private', 'global'];
     return [
-        'owner_id' => 1,
         'name' => $faker->userName,
         'type' => $types[array_rand($types)],
-        'info' => $faker->text(500)
+        'owner_id' => function () {
+            return factory(\App\User::class)->create()->id;
+        }
     ];
 });

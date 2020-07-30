@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use App\Policies\TaskPolicy;
+use App\Policies\SchedulePolicy;
 use App\Policies\UserPolicy;
-use App\Task;
+use App\Schedule;
 use App\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -17,7 +17,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        User::class => UserPolicy::class
+        User::class => UserPolicy::class,
+        Schedule::class => SchedulePolicy::class
     ];
 
     /**
@@ -28,22 +29,17 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-//        Auth::viaRequest('');
-        Gate::define('user:index', 'App\Policies\UserPolicy@viewAny');
-        Gate::define('user:create', 'App\Policies\UserPolicy@create');
-//        Gate::define('view-user', 'App\Policies\UserPolicy@view');
-//        if (Gate::forUser($user)->allows('view-user', $user)) {
-//            dd($user);
-//        }
-        Gate::define('user-view-user', function (User $user) {
-            return $user->roleIsUser();
-        });
-//        Gate::define('user:delete', function (User $user) {
-//            return $user->roleIsAdmin();
-//        });
-//        Gate::define('user:update', function (User $user) {
-//            return $user->roleIsAdmin() || $user->roleIsUser();
-//        });
-//        dd(Gate::abilities());
+        Gate::define('index-user', 'App\Policies\UserPolicy@viewAny');
+        Gate::define('view-user', 'App\Policies\UserPolicy@view');
+        Gate::define('create-user', 'App\Policies\UserPolicy@create');
+        Gate::define('update-user', 'App\Policies\UserPolicy@update');
+        Gate::define('delete-user', 'App\Policies\UserPolicy@delete');
+
+        Gate::define('index-schedule', 'App\Policies\SchedulePolicy@viewAny');
+        Gate::define('view-schedule', 'App\Policies\SchedulePolicy@view');
+        Gate::define('create-schedule', 'App\Policies\SchedulePolicy@create');
+        Gate::define('update-schedule', 'App\Policies\SchedulePolicy@update');
+        Gate::define('delete-schedule', 'App\Policies\SchedulePolicy@delete');
+
     }
 }

@@ -12,7 +12,7 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(User::class, 10)->create(['role' => User::ROLE_USER]);
-        factory(User::class, 3)->create(['role' => User::ROLE_ADMIN]);
+        factory(User::class, 1)->create(['role' => User::ROLE_USER])->relationsToArray();
+//        factory(User::class, 1)->create(['role' => User::ROLE_ADMIN]);
     }
 }

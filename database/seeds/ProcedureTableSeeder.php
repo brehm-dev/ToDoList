@@ -1,9 +1,9 @@
 <?php
 
-use App\Schedule;
+use App\Procedure;
 use Illuminate\Database\Seeder;
 
-class ScheduleTableSeeder extends Seeder
+class ProcedureTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -12,6 +12,6 @@ class ScheduleTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Schedule::class, 50)->create();
+        factory(Procedure::class, 100)->create();
     }
 }
