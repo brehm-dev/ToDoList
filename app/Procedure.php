@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @method static create(array $array)
+ * @method static where(array $array)
  */
 class Procedure extends Model
 {
@@ -15,7 +16,7 @@ class Procedure extends Model
      * @var array
      */
     protected $fillable = [
-        'schedule_id', 'content_type', 'content', 'state', 'activated_at', 'paused_at', 'finished_at'
+        'schedule_id', 'content_type', 'content', 'state', 'activated_at', 'paused_at', 'finished_at', 'creator_id'
     ];
 
     const CONTENT_TYPE_TODO = 'todo';
@@ -25,42 +26,44 @@ class Procedure extends Model
     const STATE_FINISH = 'finish';
     const ACTIVATED_AT = 'activated_at';
 
-    /**
-     * @param Procedure $procedure
-     * @return bool
-     */
-    public function setActive(Procedure $procedure)
+
+    public function getCreator()
     {
-        return $this->setState($procedure, self::STATE_ACTIVE, 'activated_at');
+        return $this->belongsTo(User::class, 'creator_id')->getResults();
     }
 
     /**
-     * @param Procedure $procedure
      * @return bool
      */
-    public function setPaused(Procedure $procedure)
+    public function setActive()
     {
-        return $this->setState($procedure, self::STATE_PAUSE, 'paused_at');
+        return $this->setState(self::STATE_ACTIVE, 'activated_at');
     }
 
     /**
-     * @param Procedure $procedure
      * @return bool
      */
-    public function setFinished(Procedure $procedure)
+    public function setPaused()
     {
-        return $this->setState($procedure, self::STATE_FINISH, 'finished_at');
+        return $this->setState(self::STATE_PAUSE, 'paused_at');
     }
 
     /**
-     * @param Procedure $procedure
+     * @return bool
+     */
+    public function setFinished()
+    {
+        return $this->setState(self::STATE_FINISH, 'finished_at');
+    }
+
+    /**
      * @param string $state
      * @param string $timestampAttribute
      * @return bool
      */
-    private function setState(Procedure $procedure, string $state, string $timestampAttribute)
+    private function setState(string $state, string $timestampAttribute)
     {
-        return $procedure->update([
+        return $this->update([
             'state' => $state,
             $timestampAttribute => now()
         ]);

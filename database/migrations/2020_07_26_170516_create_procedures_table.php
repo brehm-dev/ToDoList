@@ -16,6 +16,7 @@ class CreateProceduresTable extends Migration
         Schema::create('procedures', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('schedule_id');
+            $table->unsignedBigInteger('creator_id');
             $table->string('content_type');
             $table->longText('content');
             $table->string('state');
@@ -25,7 +26,12 @@ class CreateProceduresTable extends Migration
             $table->timestamps();
             $table->foreign('schedule_id')
                 ->references('id')
-                ->on('schedules');
+                ->on('schedules')
+                ->onDelete('cascade');
+            $table->foreign('creator_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 

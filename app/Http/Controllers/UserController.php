@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -30,31 +30,11 @@ class UserController extends Controller
      * Display a listing of the resource.
      *
      * @param Request $request
-     * @return User[]|Application|Factory|Collection|\Illuminate\Http\Response|View
+     * @return User[]|Application|Factory|Collection|Response|View
      */
     public function index(Request $request)
     {
-        $users = User::all();
-        if ($request->isXmlHttpRequest()) {
-            return $users;
-        } else {
-            return view('user.index', [
-                'users' => $users
-            ]);
-        }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function create(Request $request)
-    {
-//        return view('user.view', [
-//            'action' => route('user.create')
-//        ]);
+        return User::all();
     }
 
     /**
@@ -90,23 +70,12 @@ class UserController extends Controller
      * Display the specified resource.
      *
      * @param Request $request
-     * @param $id $user->id
-     * @return void
-     */
-    public function view(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
      * @param User $user
      * @return void
      */
-    public function edit(User $user)
+    public function view(Request $request, User $user)
     {
-
+        return User::find($user->id);
     }
 
     /**
@@ -118,7 +87,6 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-
         $data = $request->all();
         $dataToUpdate = [];
         if ($user->username !== $data['username']) $dataToUpdate['username'] = $data['username'];
@@ -126,11 +94,7 @@ class UserController extends Controller
         if ($user->role !== $data['role']) $dataToUpdate['role'] = $data['role'];
 
         $user->update($dataToUpdate);
-        if ($request->isXmlHttpRequest()) {
-            return $user;
-        } else {
-            return redirect()->route('user.index');
-        }
+        return $user;
     }
 
     /**
@@ -139,12 +103,10 @@ class UserController extends Controller
      * @param Request $request
      * @param User $user
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function destroy(Request $request, User $user)
     {
-        if ($request->isXmlHttpRequest()) {
-            return json_encode(['deleted' => $user->delete()]);
-        }
+        return json_encode(['deleted' => $user->delete()]);
     }
 }

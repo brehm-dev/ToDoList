@@ -19,8 +19,9 @@ class Schedule extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'type', 'info', 'owner_id'
+        'name', 'type', 'owner_id'
     ];
+
 
     /**
      * @return mixed

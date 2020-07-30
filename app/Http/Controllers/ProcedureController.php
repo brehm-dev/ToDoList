@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Procedure;
 use App\Schedule;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -28,11 +30,15 @@ class ProcedureController extends Controller
      * Display a listing of the resource.
      *
      * @param Schedule $schedule
-     * @return void
+     * @return JsonResponse
      */
     public function index(Schedule $schedule)
     {
-        return Procedure::where('schedule_id', $schedule->id)->orderBy('created_at', 'DESC')->get();
+        $procedures = Procedure::where('schedule_id', $schedule->id)->orderBy('created_at', 'DESC')->get();
+        foreach ($procedures as $procedure) {
+            $procedure->creator = $procedure->getCreator();
+        }
+        return \response()->json($procedures);
     }
 
     /**
@@ -70,7 +76,8 @@ class ProcedureController extends Controller
             'schedule_id' => $schedule->getAttribute('id'),
             'content_type' => $newProcedureData['content_type'],
             'content' => $newProcedureData['content'],
-            'state' => Procedure::STATE_ACTIVE
+            'state' => Procedure::STATE_ACTIVE,
+            'creator_id' => auth()->user()->id
         ]);
     }
 
@@ -79,11 +86,14 @@ class ProcedureController extends Controller
      *
      * @param Schedule $schedule
      * @param Procedure $procedure
-     * @return void
+     * @return JsonResponse
      */
     public function show(Schedule $schedule, Procedure $procedure)
     {
-//        dd($procedure);
+        return \response()->json(Procedure::where([
+            'id', $procedure->id,
+            'schedule_id' => $schedule->id
+        ])->get());
     }
 
     /**
@@ -103,7 +113,7 @@ class ProcedureController extends Controller
      * @param Request $request
      * @param Schedule $schedule
      * @param Procedure $procedure
-     * @return bool
+     * @return JsonResponse
      */
     public function update(Request $request, Schedule $schedule, Procedure $procedure)
     {
@@ -122,18 +132,25 @@ class ProcedureController extends Controller
         }
         $update['content'] = $data['content'];
         $procedure->update($update);
-        return json_encode(['updated' => true]);
+        return \response()->json(['updated' => true]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @param Request $request
+     * @param Schedule $schedule
      * @param Procedure $procedure
      * @return false|Response|string
-     * @throws \Exception
+     * @throws Exception
      */
     public function destroy(Request $request, Schedule $schedule, Procedure $procedure)
     {
-        return json_encode(['deleted' => $procedure->delete()]);
+        try {
+            return \response()->json(['deleted' => $procedure->delete()]);
+        } catch (Exception $e) {
+            // log
+            return \response()->json(['deleted' => false]);
+        }
     }
 }

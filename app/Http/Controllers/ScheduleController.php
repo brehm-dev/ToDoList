@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Schedule;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ScheduleController extends Controller
@@ -39,21 +39,6 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @param Request $request
-     * @param Schedule $schedule
-     * @return Application|Factory|View
-     */
-    public function create(Request $request)
-    {
-        //TODO: authorization and check user's role
-        return view('schedule.view', [
-            'action' => route('schedule.create')
-        ]);
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -77,22 +62,7 @@ class ScheduleController extends Controller
      */
     public function show(Schedule $schedule)
     {
-        return view('schedule.view', [
-            'schedule' => $schedule,
-            'action' => route('schedule.update', [$schedule]),
-            'method' => 'PATCH'
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param Schedule $schedule
-     * @return Response
-     */
-    public function edit(Schedule $schedule)
-    {
-        //
+        return Schedule::where('id', $schedule->id)->get();
     }
 
     /**
@@ -100,32 +70,27 @@ class ScheduleController extends Controller
      *
      * @param Request $request
      * @param Schedule $schedule
-     * @return RedirectResponse
+     * @return JsonResponse
      */
     public function update(Request $request, Schedule $schedule)
     {
         $parameters = $request->all();
-//        dd($parameters);
-        $isUpdated = $schedule->update([
+        $updated = $schedule->update([
             'name' => $parameters['name'],
             'type' => $parameters['type'],
-            'info' => $parameters['info']
         ]);
-        if ($isUpdated) {
-            return redirect()->route('schedule.index');
-        }
-        return Redirect::back();
+        return \response()->json(['updated' => $updated]);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param Schedule $schedule
-     * @return bool|Response
-     * @throws \Exception
+     * @return JsonResponse
+     * @throws Exception
      */
     public function destroy(Schedule $schedule)
     {
-        return json_encode(['deleted' => $schedule->delete()]);
+        return \response()->json(['deleted' => $schedule->delete()]);
     }
 }
