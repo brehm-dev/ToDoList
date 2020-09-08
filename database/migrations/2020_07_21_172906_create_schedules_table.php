@@ -21,7 +21,8 @@ class CreateSchedulesTable extends Migration
             $table->timestamps();
             $table->foreign('owner_id')
                 ->references('id')
-                ->on('users');
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 
