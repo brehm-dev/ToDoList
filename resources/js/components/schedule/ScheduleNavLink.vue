@@ -5,10 +5,7 @@
 </template>
 
 <script>
-    import { bus } from "../../app";
     import Schedule from "../Schedule";
-
-
     export default {
         name: 'ScheduleNavLink',
         data: function () {
@@ -17,7 +14,7 @@
         },
         methods: {
             injectComponent: function () {
-                bus.$emit('inject-component', Schedule)
+                window.EventBus.$emit('inject-component', Schedule)
             }
         },
         props: ['scheduleIndexRoute']

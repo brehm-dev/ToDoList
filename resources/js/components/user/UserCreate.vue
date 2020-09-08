@@ -37,8 +37,6 @@
 </template>
 
 <script>
-    import { bus } from '../../app'
-
     export default {
         name: 'UserCreate',
         data: function () {
@@ -50,32 +48,35 @@
                     password_confirmation: null,
                     role: null
                 },
-                errors: []
-            }
-        },
-        props: {
-            router: {
-                type: Object
             }
         },
         methods: {
             submit() {
-                window.axios({
-                    method: this.router.user.create.method,
-                    url: this.router.user.create.action,
-                    data: this.credentials
-                }).then(response => {
-                    bus.$emit('redirect-component', {route: 'Index'})
-                }).catch(e => {
-                    this.errors.push(e)
-                    console.log(e)
+                this.$parent.createUser(
+                    this.$route.fullPath.substring(0, this.$route.fullPath.length - 1),
+                    this.credentials
+                ).then(response => {
+                    if (response.hasOwnProperty('id')) {
+                        this.$router.push({
+                            name: 'UserIndex'
+                        }).catch(error => {
+                            // TODO: Error-Handling
+                        })
+                    }
                 })
             }
         },
+        beforeMount() {
+            window.EventBus.$on('UserCreate', this.submit);
+        },
         mounted() {
-            this.$nextTick(function () {
-                bus.$on('submit-user', this.submit);
+            this.$parent.setComponent({
+                current: 'UserCreate',
+                form: true
             })
+        },
+        beforeDestroy() {
+            window.EventBus.$off('UserCreate', this.submit);
         }
     }
 </script>

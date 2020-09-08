@@ -15,14 +15,13 @@
                     <span class="badge badge-light">{{ user.role }}</span>
                 </div>
                 <div class="col-sm-3">
-                    <button
-                        class="btn btn-info"
-                        @click="editUser(user)"
-                    >Edit</button>
-                    <button
+                    <router-link class="btn btn-info" tag="button"
+                        :to="{ name: 'UserEdit', params: { id: user.id, user: user } }"
+                    >Edit</router-link>
+                    <router-link
                         class="btn btn-danger"
-                        @click="deleteUser(user)"
-                    >Delete</button>
+                        :to="{ name: 'UserDelete', params: { id: user.id, user: user } }"
+                    >Delete</router-link>
                 </div>
             </div>
         </li>
@@ -30,7 +29,6 @@
 </template>
 
 <script>
-    import { bus } from '../../app'
 
     export default {
         name: 'UserIndex',
@@ -39,29 +37,21 @@
                 users: null,
             }
         },
-        props: {
-            router: {
-                type: Object
-            }
+        methods: {},
+        beforeMount() {
+            this.$parent.setComponent({
+                current: 'UserIndex',
+                form: false
+            })
         },
-        methods: {
-            editUser(user) {
-                bus.$emit('redirect-component', {route: 'Edit', user: user})
-            },
-            deleteUser(user) {
-                bus.$emit('delete-user', {route: 'Delete', user: user})
+        mounted() {
+            const asyncUsers = this.$parent.indexUsers()
+            const bindUsers = (users) => {
+                this.users = users
             }
-        },
-        created() {
-            if (this.users === null) {
-                window.axios({
-                    method: this.router.user.index.method,
-                    url: this.router.user.index.action
-                }).then(response => {
-                    console.log(response)
-                    this.users = response.data
-                })
-            }
+            asyncUsers.then(res => {
+                bindUsers(res)
+            })
         }
     }
 </script>

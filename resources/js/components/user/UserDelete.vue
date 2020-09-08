@@ -1,7 +1,7 @@
 <template>
     <div class="container" style="width: 32em">
         <div class="row">
-            <p class="text-center">Do you want to delete User: {{user.email}} ?</p>
+            <p class="text-center">Do you want to delete User: {{user.username}} ?</p>
         </div>
         <div class="row">
             <div class="col-sm">
@@ -15,35 +15,25 @@
 </template>
 
 <script>
-    import { bus } from "../../app";
-
     export default {
         data: function () {
             return {}
         },
-        props: {
-            router: {
-                type: Object
-            },
-            user: {
-                type: Object
+        beforeMount() {
+            this.$parent.setComponent({
+                current: 'UserDelete',
+                form: true
+            })
+            if (this.$route.params.hasOwnProperty('user')) {
+                this.user = this.$route.params.user
             }
         },
         methods: {
             acceptDelete() {
-                window.axios({
-                    method: this.router.user.delete.method,
-                    url: this.router.user.delete.action.replace('{user}', this.user.id)
-                }).then(response => {
-                    if (response.data.deleted === true) {
-                        bus.$emit('redirect-component', {route: 'Index'})
-                    }
-                }).catch(e => {
-                    console.log(e)
-                })
+                this.$parent.delete(this.$route.fullPath)
             },
             discardDelete() {
-                bus.$emit('redirect-component', {route: 'Index'})
+                this.$router.push({ name: 'UserIndex'})
             }
         }
     }

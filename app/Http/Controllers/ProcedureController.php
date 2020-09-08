@@ -149,7 +149,7 @@ class ProcedureController extends Controller
         try {
             return \response()->json(['deleted' => $procedure->delete()]);
         } catch (Exception $e) {
-            // log
+            // log $e
             return \response()->json(['deleted' => false]);
         }
     }

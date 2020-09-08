@@ -8,9 +8,10 @@
                     </div>
                     <div class="col-sm-4">Search</div>
                     <div class="col-sm-4">
-                        <button class="btn btn-success"
-                            @click="createProcedure"
-                        >new ToDo</button>
+                        <router-link
+                            :to="{ name: 'ProcedureCreate', params: { sid: schedule.id, schedule: schedule } }"
+                            class="btn btn-success"
+                        >Create ToDo</router-link>
                     </div>
                 </div>
             </div>
@@ -130,69 +131,76 @@
 </template>
 
 <script>
-    import { bus } from '../../app'
-
     export default {
-        name: 'ProcedureIndex',
         data: function () {
             return {
                 procedures: {},
                 mode: 'view',
-                newProcedure: {}
-            }
-        },
-        props: {
-            schedule: {
-                type: Object
-            },
-            router: {
-                type: Object
+                newProcedure: {},
+                schedule: {}
             }
         },
         methods: {
             createProcedure(schedule) {
                 // this.mode = 'new'
-                bus.$emit('redirect-schedule', {
-                    route: 'ProcedureCreate',
-                    schedule: this.schedule
-                })
+                // window.EventBus.$emit('redirect-schedule', {
+                //     route: 'ProcedureCreate',
+                //     schedule: this.schedule
+                // })
             },
             updateProcedure(procedure, update) {
-                window.axios({
-                    method: this.router.procedure.update.method,
-                    url: this.router.procedure.update.action.replace('{schedule}', this.schedule.id).replace('{procedure}', procedure.id),
-                    data: {
-                        content: update.content,
-                        content_type: update.content_type,
-                        state: update.state
+                this.$parent.update({
+                    axios: {
+                        method: 'PATCH',
+                        url: this.$route.fullPath + procedure.id,
+                        data: {
+                            content: update.content,
+                            content_type: update.content_type,
+                            state: update.state
+                        }
+                    },
+                    callback: (process) => {
+                        if (process.updated) {
+                            return true
+                        }
                     }
-                }).then(response => {
-                    // console.log(response.data)
-                }).catch(e => {
-                    console.log(e)
                 })
             },
             deleteProcedure(procedure, index) {
-                window.axios({
-                    method: this.router.procedure.delete.method,
-                    url: this.router.procedure.delete.action.replace('{schedule}', this.schedule.id).replace('{procedure}', procedure.id)
-                }).then(response => {
-                    if (response.status === 200 && response.data.deleted === true) {
+
+                this.$parent.delete({
+                    axios: {
+                        method: 'DELETE',
+                        url: this.$route.fullPath + procedure.id
+                    }
+                }).then(state => {
+                    if (state.deleted) {
                         this.$refs['procedure'][index].remove()
                     }
                 })
+
+
+                // window.axios({
+                //     method: this.router.procedure.delete.method,
+                //     url: this.router.procedure.delete.action.replace('{schedule}', this.schedule.id).replace('{procedure}', procedure.id)
+                // }).then(response => {
+                //     if (response.status === 200 && response.data.deleted === true) {
+                //         this.$refs['procedure'][index].remove()
+                //     }
+                // })
             },
             setProcedureState(procedure, state) {
+
                 if (this.mode === 'new') {
                     procedure.state = state
                 } else {
                     if (procedure.state !== state) {
-                        procedure.state = state
-                        this.updateProcedure(procedure, {
-                            content: procedure.content,
-                            content_type: procedure.content_type,
-                            state: state
-                        })
+                        const copy = procedure
+                        copy.state = state
+                        if (this.updateProcedure(procedure, copy)) {
+                            procedure.state = state
+                        }
+
                     }
                 }
 
@@ -218,13 +226,21 @@
                 }
             }
         },
-        created() {
-            window.axios({
-                method: this.router.procedure.index.method,
-                url: this.router.procedure.index.action.replace('{schedule}', this.schedule.id)
-            }).then(response => {
-                this.procedures = response.data
+        beforeMount() {
+            this.schedule = this.$route.params.schedule
+            this.$parent.setComponent({
+                current: this.$route.name,
+                title: this.$route.name
             })
-        },
+            this.$parent.index({
+                axios: {
+                    method: 'GET',
+                    url: this.$route.fullPath
+                },
+                callback: (data) => {
+                    this.procedures = data
+                }
+            })
+        }
     }
 </script>

@@ -49,48 +49,50 @@
 </template>
 
 <script>
-    import { bus } from '../../app'
 
-    export default {
-        name: 'UserEdit',
-        data: function () {
-            return {
-                errors: []
-            }
-        },
-        props: {
-            router: {
-                type: Object
-            },
-            credentials: {
-                type: Object
-            }
-        },
-        methods: {
-            submit() {
-                const url = this.router.user.update.action.replace('{user}', this.credentials.id)
-                // console.log(this.route, url, this.credentials)
-                window.axios({
-                    method: this.router.user.update.method,
-                    url: url,
-                    data: {
-                        username: this.credentials.username,
-                        email: this.credentials.email,
-                        role: this.credentials.role
-                    }
-                }).then(response => {
-                    bus.$emit('redirect-component', {route: 'Index'})
-                    console.log(response)
-                }).catch(e => {
-                    this.errors.push(e)
-                    console.log(this.errors)
-                })
-            }
-        },
-        mounted() {
-            this.$nextTick(function () {
-                bus.$on('submit-user', this.submit);
+export default {
+    name: 'UserEdit',
+    data: function () {
+        return {
+            errors: [],
+            credentials: {}
+        }
+    },
+    methods: {
+        submit() {
+            this.$parent.editUser({
+                url: this.$route.fullPath,
+                data: {
+                    username: this.credentials.username,
+                    email: this.credentials.email,
+                    role: this.credentials.role,
+                }
+            }).then(user => {
+                console.log('Edited User', user)
+                if (user.hasOwnProperty('id')) {
+                    this.$router.push({
+                        name: 'UserIndex'
+                    }).catch((error) => {
+                        console.log(error)
+                    })
+                }
             })
-        },
+        }
+    },
+    beforeMount() {
+        this.$parent.setComponent({
+            current: 'UserEdit',
+            form: true
+        })
+        if (this.$route.params.hasOwnProperty('user')) {
+            this.credentials = this.$route.params.user
+        } else {
+            this.credentials = {}
+        }
+        window.EventBus.$on('UserEdit', this.submit);
+    },
+    beforeDestroy() {
+        window.EventBus.$off('UserEdit', this.submit);
     }
+}
 </script>

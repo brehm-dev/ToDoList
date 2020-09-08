@@ -25,7 +25,6 @@
 </template>
 
 <script>
-    import { bus } from '../../app'
     import ScheduleListing from './ScheduleListing'
 
     export default {
@@ -35,29 +34,12 @@
                 schedules: {},
             }
         },
-        mounted() {},
-        created() {
-            window.axios({
-                method: this.router.schedule.index.method,
-                url: this.router.schedule.index.action
-            }).then(response => {
-                console.log(response.data)
-                this.schedules = response.data
+        beforeMount() {
+            const schedules = this.$parent.index(schedules => {
+                this.schedules = schedules
             })
         },
-        props: {
-            router: {
-                type: Object
-            }
-        },
         components: {ScheduleListing},
-        methods: {
-            // editUser(user) {
-            //     bus.$emit('redirect-component', {route: 'Edit', user: user})
-            // },
-            // deleteUser(user) {
-            //     bus.$emit('delete-user', {route: 'Delete', user: user})
-            // }
-        }
+        methods: {}
     }
 </script>

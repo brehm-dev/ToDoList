@@ -21,8 +21,9 @@
 <script>
     import { bus } from '../../app'
 
+    import { Axios } from 'axios'
+
     export default {
-        name: 'ScheduleCreate',
         data: function () {
             return {
                 schedule: {
@@ -31,27 +32,37 @@
                 }
             }
         },
-        mounted() {
-            this.$nextTick(function () {
-                bus.$on('submit-schedule', this.submit);
+        beforeMount() {
+            this.$parent.setComponent({
+                current: 'ScheduleCreate',
+                form: true,
+                title: 'Create a Schedule'
             })
+            window.EventBus.$on(this.$route.name, this.submit)
         },
-        props: {
-            router: {
-                type: Object
-            }
+        beforeDestroy() {
+            window.EventBus.$off(this.$route.name, this.submit)
         },
         methods: {
             submit() {
-                window.axios({
-                    method: this.router.schedule.create.method,
-                    url: this.router.schedule.create.action,
-                    data: this.schedule
-                }).then(response => {
-                    // console.log(response)
-                    bus.$emit('redirect-schedule', {route: 'Index'})
-                }).catch(e => {
-                    console.log(e)
+                this.$parent.create({
+                    axios: {
+                        method: 'POST',
+                        url: this.$route.fullPath.substring(0, this.$route.fullPath.length - 1),
+                        data: this.schedule
+                    },
+                    callback: (response) => {
+                        if (response.data.hasOwnProperty('id')) {
+                            this.$router.push({
+                                name: 'ProcedureIndex',
+                                params:
+                                    {
+                                        id: response.data.id,
+                                        schedule: response.data
+                                    }
+                            })
+                        }
+                    }
                 })
             }
         }

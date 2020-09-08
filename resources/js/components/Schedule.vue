@@ -5,47 +5,24 @@
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="row">
-                            <h5>Schedule {{ route }}</h5>
-                        </div>
-                        <div class="row">
-                            <button
-                                @mouseup="returnToPrevious"
-                                class="btn btn-sm btn-outline-light"
-                                v-show="this.route !== 'Index'"
-                            >
-                                <h5>&lt;</h5>
-                            </button>
+                            <h5>Schedule {{ setting.title }}</h5>
                         </div>
                     </div>
                     <div class="col-sm-4"></div>
                     <div class="col-sm-4">
-                        <button v-show="route === 'Index'" class="btn btn-sm btn-primary" @click="switchRoute({route: 'Create'})">Create New Schedule</button>
+                        <router-link
+                            :to="{ name: 'ScheduleCreate' }"
+                            class="btn btn-sm btn-primary"
+                        >Create New Schedule</router-link>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <ScheduleIndex
-                    v-if="route === 'Index'"
-                    v-bind:router="router"
-                ></ScheduleIndex>
-                <ScheduleCreate
-                    v-if="route === 'Create'"
-                    v-bind:router="router"
-                ></ScheduleCreate>
-                <ProcedureIndex
-                    v-if="route === 'ProcedureIndex'"
-                    v-bind:router="router"
-                    v-bind:schedule="schedule"
-                ></ProcedureIndex>
-                <ProcedureCreate
-                    v-if="route === 'ProcedureCreate'"
-                    v-bind:router="router"
-                    v-bind:schedule="schedule"
-                ></ProcedureCreate>
+                <router-view></router-view>
             </div>
-            <div class="card-footer" v-if="route === 'Create' || route === 'Edit' || route === 'ProcedureCreate'">
+            <div class="card-footer" v-if="setting.form">
                 <div class="row">
-                    <button type="submit" class="btn btn-block btn-success" @click="submitSchedule()">Submit</button>
+                    <button type="submit" class="btn btn-block btn-success" @click="submit()">Submit</button>
                 </div>
             </div>
         </div>
@@ -58,73 +35,56 @@
     import ProcedureIndex from './procedure/ProcedureIndex'
     import ProcedureCreate from './procedure/ProcedureCreate'
 
-    import { bus } from '../app'
+    const Axios = require('./lib/axios-custom').default
 
     export default {
         name: 'Schedule',
         data: function () {
             return {
-                route: 'Index',
-                schedule: {},
-                history: [],
+                setting: {
+                    current: 'ScheduleIndex',
+                    title: null,
+                    form: false
+                }
             }
         },
         mounted() {
 
-            this.$nextTick(() => {
-                bus.$on('redirect-schedule', this.switchRoute)
-            })
+            // this.$nextTick(() => {
+            //     window.EventBus.$on('redirect-schedule', this.switchRoute)
+            // })
         },
         methods: {
-            getRouteForKey(key) {
-                if (this.routes.hasOwnProperty(key)) return this.routes[key]
-                return false
-            },
-            submitSchedule() {
-                const submitSchedule = 'submit-schedule'
-                const submitProcedure = 'submit-procedure'
-
-                if (this.route === ('Create' || 'Edit')) {
-                    bus.$emit(submitSchedule)
-                } else {
-                    bus.$emit(submitProcedure)
+            setComponent(options) {
+                if (options.hasOwnProperty('current')) {
+                    this.setting.current = options.current
+                }
+                if (options.hasOwnProperty('form')) {
+                    if (options.form === true) {
+                        this.setting.form = options.form
+                    }
+                }
+                if (options.hasOwnProperty('title')) {
+                    this.setting.title = options.title
                 }
             },
-            switchRoute(args) {
-
-                this.history.push(this.route)
-                if (args.hasOwnProperty('schedule')) this.schedule = args.schedule
-                if (args.hasOwnProperty('route')) this.route = args.route
+            submit() {
+               window.EventBus.$emit(this.$route.name)
             },
-            returnToPrevious() {
-                const index = 'Index'
-                const procedureIndex = 'ProcedureIndex'
-                const procedureCreate = 'ProcedureCreate'
-                console.log(this.history)
-                const last = this.history[this.history.length - 1]
-                const priv = this.history[this.history.length - 2]
-                if (
-                    priv === procedureIndex && last === procedureCreate ||
-                    priv === procedureCreate && last === procedureIndex ||
-                    priv === procedureIndex && last === procedureIndex ||
-                    last === procedureIndex && priv === index ||
-                    last === index
-                ) {
-                    this.route = index
-                }
-                if (
-                    priv === index && last === procedureIndex ||
-                    priv === procedureIndex && last === procedureIndex
-                ) {
-                    this.route = procedureIndex
-                }
-
-            }
-        },
-        components: {ScheduleIndex, ScheduleCreate, ProcedureIndex, ProcedureCreate},
-        props: {
-            router: {
-                type: Object
+            index(callback) {
+                return Axios({
+                    method: 'GET',
+                    url: this.$route.fullPath
+                }).then(response => {
+                    callback(response.data)
+                }).catch(e => {
+                    console.log(e)
+                })
+            },
+            create(options) {
+                Axios(options.axios).then(response => {
+                    options.callback(response)
+                })
             }
         }
     }

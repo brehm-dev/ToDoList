@@ -5,50 +5,25 @@
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="row">
-                            <h5>User {{ route }}</h5>
-                        </div>
-                        <div class="row">
-                            <button
-                                @mouseup="returnToPrevious"
-                                class="btn btn-sm btn-outline-dark"
-                                v-show="this.route !== 'Index'"
-                            >
-                                <h5>&lt;</h5>
-                            </button>
+                            <h5>User {{ setting.action }}</h5>
                         </div>
                     </div>
                     <div class="col-sm-4"></div>
                     <div class="col-sm-4">
-                        <button class="btn btn-sm btn-primary" @click="switchRoute({route: 'Create'})">Create New User</button>
+                        <router-link
+                            tag="button"
+                            class="btn btn-sm btn-primary"
+                            :to="{ name: 'UserCreate' }"
+                        >Create New User</router-link>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <UserIndex
-                    v-if="route === 'Index'"
-                    v-bind:router="router"
-                ></UserIndex>
-
-                <UserCreate
-                    v-if="route === 'Create'"
-                    v-bind:router="router"
-                ></UserCreate>
-
-                <UserEdit
-                    v-if="route === 'Edit'"
-                    v-bind:credentials="user"
-                    v-bind:router="router"
-                ></UserEdit>
-
-                <UserDelete
-                    v-if="route === 'Delete'"
-                    v-bind:user="user"
-                    v-bind:router="router"
-                ></UserDelete>
+                <router-view></router-view>
             </div>
-            <div class="card-footer" v-if="route === 'Create' || route === 'Edit'">
+            <div class="card-footer" v-if="setting.form">
                 <div class="row">
-                    <button type="submit" class="btn btn-block btn-success" @click="submitUser">Submit</button>
+                    <button type="submit" class="btn btn-block btn-success" @click="submit">Submit</button>
                 </div>
             </div>
         </div>
@@ -57,52 +32,66 @@
 </template>
 
 <script>
-    import UserIndex from "./user/UserIndex";
-    import UserCreate from "./user/UserCreate";
-    import UserEdit from "./user/UserEdit";
-    import UserDelete from "./user/UserDelete"
-    import { bus } from "../app";
-
+    const Axios = require('./lib/axios-custom').default
     export default {
-        name: 'User',
         data: function () {
             return {
-                route: 'Index',
-                user: null,
-                history: []
+                setting: {
+                    current: 'UserIndex',
+                    form: false,
+                }
             }
-        },
-        mounted() {
-            this.$nextTick(() => {
-                bus.$on('redirect-component', this.switchRoute)
-                bus.$on('delete-user', this.deleteUser)
-                bus.$on('return-to-previous', () => {
-                    console.log(this.history[this.history.length - 1])
-                    this.route = this.history[this.history.length - 1]
-                })
-            })
         },
         methods: {
-            deleteUser(args) {
-                this.user = args.user
-                this.route = args.route
+            submit() {
+                window.EventBus.$emit(this.setting.current);
             },
-            switchRoute(args) {
-                this.history.push(this.route)
-                if (args.hasOwnProperty('user')) this.user = args.user
-                if (args.hasOwnProperty('route')) this.route = args.route
+            setComponent(options = {}) {
+                if (options.hasOwnProperty('current')) this.setting.current = options.current
+                if (options.hasOwnProperty('form')) this.setting.form = options.form;
             },
-            submitUser(event) {
-                bus.$emit('submit-user');
+            async editUser(options) {
+                return await Axios({
+                    method: 'PATCH',
+                    url: options.url,
+                    data: options.data
+                }).then(response => {
+                    return response.data
+                }).catch(error => {
+                    // console.error(error)
+                });
             },
-            returnToPrevious() {
-                bus.$emit('return-to-previous')
-            }
-        },
-        components: {UserIndex, UserCreate, UserEdit, UserDelete},
-        props: {
-            router: {
-                type: Object
+            async createUser(url, credentials) {
+                return await Axios({
+                    method:'POST',
+                    url: url,
+                    data: credentials
+                }).then(response => {
+                     return response.data
+                }).catch(error => {
+                    console.log(error)
+                })
+            },
+            async indexUsers() {
+                return await Axios({
+                    method: 'GET',
+                    url: '/user'
+                }).then(response => {
+                    return response.data
+                })
+            },
+            async delete(url) {
+                return await Axios({
+                    method: 'DELETE',
+                    url: url
+                }).then(response => {
+                    if (response.data.deleted) {
+                        this.$router.push({ name: 'UserIndex' })
+                    }
+                }).catch(e => {
+                    console.error(e)
+                    this.$router.push({ name: 'UserIndex' })
+                })
             }
         }
     }

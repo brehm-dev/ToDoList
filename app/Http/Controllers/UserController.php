@@ -7,6 +7,7 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -88,12 +89,11 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $data = $request->all();
-        $dataToUpdate = [];
-        if ($user->username !== $data['username']) $dataToUpdate['username'] = $data['username'];
-        if ($user->email !== $data['email']) $dataToUpdate['email'] = $data['email'];
-        if ($user->role !== $data['role']) $dataToUpdate['role'] = $data['role'];
-
-        $user->update($dataToUpdate);
+        $user->update([
+            'username' => $user->username === $data['username'] ? $user->username : $data['username'],
+            'email' => $user->email === $data['email'] ? $user->email : $data['email'],
+            'role' => $user->getRole() === $data['role'] ? $user->getRole() : $data['role'],
+        ]);
         return $user;
     }
 
@@ -102,11 +102,13 @@ class UserController extends Controller
      *
      * @param Request $request
      * @param User $user
-     * @return bool
+     * @return JsonResponse
      * @throws Exception
      */
     public function destroy(Request $request, User $user)
     {
-        return json_encode(['deleted' => $user->delete()]);
+        return response()->json([
+            'deleted' => $user->delete(),
+        ]);
     }
 }

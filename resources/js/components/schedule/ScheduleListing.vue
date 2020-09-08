@@ -28,10 +28,10 @@
                             </div>
                         </div>
                         <div class="col-sm-4">
-                            <button
-                                @click="enterSchedule(schedule)"
+                            <router-link
+                                :to="{ name: 'ProcedureIndex', params: { sid: schedule.id, schedule: schedule} }"
                                 class="btn btn-info"
-                            >Enter</button>
+                            >Enter</router-link>
                             <button
                                 @click="deleteSchedule(schedule, index)"
                                 class="btn btn-danger"
@@ -50,8 +50,6 @@
 </template>
 
 <script>
-    import {bus} from '../../app'
-
     export default {
         data: function () {
             return {
@@ -64,20 +62,17 @@
             },
             type: {
                 type: Object
-            },
-            router: {
-                type: Object
             }
         },
         created() {
-            bus.$emit('get-current-user', (user) => {
+            window.EventBus.$emit('get-current-user', (user) => {
                 this.user = user
             })
 
         },
         methods: {
             deleteSchedule(schedule, index) {
-                console.log(this.router)
+                // console.log(this.router)
                 // if (window.confirm(`Do you want to delete Schedule: ${schedule.name} ?`)) {
                 //     const deleteRoute = this.router.schedule['delete']
                 //     const route = deleteRoute.action.replace('{schedule}', schedule.id)
@@ -91,10 +86,7 @@
                 // }
             },
             enterSchedule(schedule) {
-                bus.$emit('redirect-schedule', {
-                    route: 'ProcedureIndex',
-                    schedule: schedule
-                })
+                this.$router.push()
             }
         }
     }
